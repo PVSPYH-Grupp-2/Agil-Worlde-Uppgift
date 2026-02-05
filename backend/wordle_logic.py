@@ -2,6 +2,8 @@ import random # Just for now
 import os
 import json
 from typing import List
+from flask import Flask, redirect, url_for
+
 
 LETTER_NOT_IN_WORD = 0 # Bokstaven finns inte alls i ordet // Letter is not inte the word at all
 LETTER_CORRECT_WRONG_POS = 1 # Bokstaven finns i ordet, men i fel position // Letter is in the word, but in the wrong position
@@ -22,15 +24,23 @@ def generate_word(words) -> str:
 
 
 # Checks if the guessed word is correct
-def win_validation(guessed_word, generated_word) -> bool:
-    """
-    Returns True if the guessed word matches the generated word.
-    If True, we could save that data to keep track of the score,
-    or simply just tell the user they won! Yay!
-    """
-    return guessed_word.lower() == generated_word.lower()
-    # We return a bool because the rest of the logic should be outside of this function. Best practice i've heard :S
-    
+def win_validation(guessed_word, generated_word, wins) -> int:
+
+    if guessed_word == generated_word:
+        wins + 1
+        print("Grattis, du vann!")
+    else:
+        print("Förlust, prova igen!")
+        
+
+def try_again(yes) -> bool:
+
+    if yes:
+        return redirect(url_for("index.html"))
+    else:
+        return redirect(url_for("index.html"))
+
+
 
 def letter_check(generated_word, guessed_letter) -> List[int]: 
 # Checks each letter
