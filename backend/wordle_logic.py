@@ -12,12 +12,13 @@ BASE_DIR = os.path.abspath(
 wins = 0
 # Also i probably will not use global variables as the ones above in the future. It's just there as an illustration.
 
-def generate_word(words) -> str:
-    """
-    This func just returns a random word from a list.
-    Can be replaced by Pontus and his random-word-generator :D
-    """
+def generate_word(words: list[str]) -> str:
+
+    if not words:
+        raise ValueError("No wordlist found")
+    
     return random.choice(words).lower()
+
 # This one we will scrap.
 
 
