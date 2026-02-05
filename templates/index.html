@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guess the Word</title>
+</head>
+<body>
+    <main>
+        <h1>Guess the 5-letter Secret Word</h1>
+
+        <form action="/" method="POST">
+            <input type="text" name="l1" maxlength="1" required>
+            <input type="text" name="l2" maxlength="1" required>
+            <input type="text" name="l3" maxlength="1" required>
+            <input type="text" name="l4" maxlength="1" required>
+            <input type="text" name="l5" maxlength="1" required>
+            <button type="submit">Submit Guess</button>
+        </form>
+    
+
+        <h2 id="user-guess" data-guess="{{ saved_word }}">
+            Your Guess: {{ saved_word }}
+        </h2>
+        
+        <h2 id="secret-word" data-secret="{{ the_secret }}">
+            Secret Word: {{ the_secret }}
+        </h2>
+    </main>
+
+    <script src="/static/assets/scripts.js"></script>
+</body>
+</html>
