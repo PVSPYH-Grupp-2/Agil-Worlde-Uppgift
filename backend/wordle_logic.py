@@ -1,9 +1,14 @@
 import random # Just for now
+import os
+import json
 from typing import List
 
 LETTER_NOT_IN_WORD = 0 # Bokstaven finns inte alls i ordet // Letter is not inte the word at all
 LETTER_CORRECT_WRONG_POS = 1 # Bokstaven finns i ordet, men i fel position // Letter is in the word, but in the wrong position
 LETTER_PERFECT = 2 # Letter is in the word and in the exact position
+BASE_DIR = os.path.abspath(
+    os.path.join(os.path.dirname(__file__), "..")
+)
 wins = 0
 # Also i probably will not use global variables as the ones above in the future. It's just there as an illustration.
 
@@ -70,3 +75,10 @@ as simple as possible for now. So that we could try to implement it, and get it 
 Thank you. It's been your boy Jimpanpimpan.
 Checking out...
 """
+
+def load_wordlist():
+    path = os.path.join(BASE_DIR, "static", "assets", "words.json")
+    with open(path, encoding="utf-8") as f:
+        words = json.load(f)
+
+    return words
