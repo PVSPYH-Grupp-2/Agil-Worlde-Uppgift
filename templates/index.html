@@ -3,21 +3,56 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Guess the Word</title>
+    <title>Wordle Game</title>
 </head>
 <body>
     <main>
         <h1>Guess the 5-letter Secret Word</h1>
 
         <form action="/" method="POST">
-            <input type="text" name="l1" maxlength="1" required>
-            <input type="text" name="l2" maxlength="1" required>
-            <input type="text" name="l3" maxlength="1" required>
-            <input type="text" name="l4" maxlength="1" required>
-            <input type="text" name="l5" maxlength="1" required>
+
+        <div id="row-0">
+            <input type="text" name="l1"  maxlength="1" autofocus>
+            <input type="text" name="l2"  maxlength="1">
+            <input type="text" name="l3"  maxlength="1">
+            <input type="text" name="l4"  maxlength="1">
+            <input type="text" name="l5"  maxlength="1">
+        </div>
+
+        <div id="row-1">
+            <input type="text"  maxlength="1" disabled>
+            <input type="text"  maxlength="1" disabled>
+            <input type="text"  maxlength="1" disabled>
+            <input type="text"  maxlength="1" disabled>
+            <input type="text"  maxlength="1" disabled>
+        </div>
+
+        <div id="row-2">
+            <input type="text"  maxlength="1" disabled>
+            <input type="text"  maxlength="1" disabled>
+            <input type="text"  maxlength="1" disabled>
+            <input type="text"  maxlength="1" disabled>
+            <input type="text"  maxlength="1" disabled>
+        </div>
+
+        <div id="row-3">
+            <input type="text"  maxlength="1" disabled>
+            <input type="text"  maxlength="1" disabled>
+            <input type="text"  maxlength="1" disabled>
+            <input type="text"  maxlength="1" disabled>
+            <input type="text"  maxlength="1" disabled>
+        </div>
+
+        <div id="row-4">
+            <input type="text"  maxlength="1" disabled>
+            <input type="text"  maxlength="1" disabled>
+            <input type="text"  maxlength="1" disabled>
+            <input type="text"  maxlength="1" disabled>
+            <input type="text"  maxlength="1" disabled>
+        </div>
+
             <button type="submit">Submit Guess</button>
         </form>
-    
 
         <h2 id="user-guess" data-guess="{{ saved_word }}">
             Your Guess: {{ saved_word }}
