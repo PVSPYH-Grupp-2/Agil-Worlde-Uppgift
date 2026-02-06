@@ -1,31 +1,47 @@
 import random # Just for now
+import os
+import json
 from typing import List
+from flask import Flask, redirect, url_for
+
 
 LETTER_NOT_IN_WORD = 0 # Bokstaven finns inte alls i ordet // Letter is not inte the word at all
 LETTER_CORRECT_WRONG_POS = 1 # Bokstaven finns i ordet, men i fel position // Letter is in the word, but in the wrong position
 LETTER_PERFECT = 2 # Letter is in the word and in the exact position
+BASE_DIR = os.path.abspath(
+    os.path.join(os.path.dirname(__file__), "..")
+)
 wins = 0
 # Also i probably will not use global variables as the ones above in the future. It's just there as an illustration.
 
-def generate_word(words) -> str:
-    """
-    This func just returns a random word from a list.
-    Can be replaced by Pontus and his random-word-generator :D
-    """
+def generate_word(words: list[str]) -> str:
+
+    if not words:
+        raise ValueError("No wordlist found")
+    
     return random.choice(words).lower()
+
 # This one we will scrap.
 
 
 # Checks if the guessed word is correct
-def win_validation(guessed_word, generated_word) -> bool:
-    """
-    Returns True if the guessed word matches the generated word.
-    If True, we could save that data to keep track of the score,
-    or simply just tell the user they won! Yay!
-    """
-    return guessed_word.lower() == generated_word.lower()
-    # We return a bool because the rest of the logic should be outside of this function. Best practice i've heard :S
-    
+def win_validation(guessed_word, generated_word, wins) -> int:
+
+    if guessed_word == generated_word:
+        wins + 1
+        print("Grattis, du vann!")
+    else:
+        print("Förlust, prova igen!")
+        
+
+def try_again(yes) -> bool:
+
+    if yes:
+        return redirect(url_for("index.html"))
+    else:
+        return redirect(url_for("index.html"))
+
+
 
 def letter_check(generated_word, guessed_letter) -> List[int]: 
 # Checks each letter
@@ -70,3 +86,10 @@ as simple as possible for now. So that we could try to implement it, and get it 
 Thank you. It's been your boy Jimpanpimpan.
 Checking out...
 """
+
+def load_wordlist():
+    path = os.path.join(BASE_DIR, "static", "assets", "words.json")
+    with open(path, encoding="utf-8") as f:
+        words = json.load(f)
+
+    return words
