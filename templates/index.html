@@ -54,12 +54,12 @@
             <button type="submit">Submit Guess</button>
         </form>
 
-        <h2 id="user-guess" data-guess="{{ saved_word }}">
-            Your Guess: {{ saved_word }}
+        <h2 id="user-guess" data-guess="{{ guessed_word }}">
+            Your Guess: {{ guessed_word }}
         </h2>
         
-        <h2 id="secret-word" data-secret="{{ the_secret }}">
-            Secret Word: {{ the_secret }}
+        <h2 id="secret-word" data-secret="{{ generated_word }}">
+            Secret Word: {{ generated_word }}
         </h2>
     </main>
 
