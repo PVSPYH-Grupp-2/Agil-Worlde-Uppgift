@@ -11,8 +11,8 @@ def generate_secret_word() -> str:
 
 @app.route("/", methods=["GET", "POST"])
 def home():
-    the_secret = generate_secret_word()
-    saved_word = ""
+    generated_word = generate_secret_word()
+    guessed_word = ""
     global wins
 
     if request.method == "POST":
@@ -21,13 +21,13 @@ def home():
         l3 = request.form.get("l3", "").strip()
         l4 = request.form.get("l4", "").strip()
         l5 = request.form.get("l5", "").strip() 
-        saved_word = (l1 + l2 + l3 + l4 + l5).lower()
+        guessed_word = (l1 + l2 + l3 + l4 + l5).lower()
 
-        if win_validation(saved_word, the_secret):
+        if win_validation(guessed_word, generated_word):
             wins += 1
-            the_secret = generate_secret_word()
+            generated_word = generate_secret_word()
 
-    return render_template("index.html", saved_word=saved_word, the_secret=the_secret, wins=wins)
+    return render_template("index.html", guessed_word=guessed_word, generated_word=generated_word, wins=wins)
 
 if __name__ == "__main__":
     app.run(debug=True)
