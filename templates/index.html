@@ -12,11 +12,11 @@
         <form action="/" method="POST">
 
         <div id="row-0">
-            <input type="text" name="l1"  maxlength="1" autofocus>
-            <input type="text" name="l2"  maxlength="1">
-            <input type="text" name="l3"  maxlength="1">
-            <input type="text" name="l4"  maxlength="1">
-            <input type="text" name="l5"  maxlength="1">
+            <input id="l1" type="text" name="l1"  maxlength="1" autofocus>
+            <input id="l2" type="text" name="l2"  maxlength="1">
+            <input id="l3" type="text" name="l3"  maxlength="1">
+            <input id="l4" type="text" name="l4"  maxlength="1">
+            <input id="l5" type="text" name="l5"  maxlength="1">
         </div>
 
         <div id="row-1">
@@ -53,6 +53,12 @@
 
             <button type="submit">Submit Guess</button>
         </form>
+
+        <div id="virtual-keyboard">
+            {% for letter in 'ABCDEFGHIJKLMNOPQRSTUVWXYZ' %}
+                <button type="button" class="virtual-key">{{ letter }}</button>
+            {% endfor %}
+        </div>
 
         <h2 id="user-guess" data-guess="{{ saved_word }}">
             Your Guess: {{ saved_word }}
