@@ -25,7 +25,24 @@ def generate_word(words: list[str]) -> str:
 
 
 # Checks if the guessed word is correct
-def win_validation(guessed_word, generated_word, wins) -> int:
+def win_validation(guessed_word, generated_word) -> bool:
+
+    if guessed_word == generated_word:
+        print("Grattis, du vann!")
+        return True
+    else:
+        print("Förlust, prova igen!")
+        return False
+        
+
+def try_again(yes) -> bool:
+
+    if yes:
+        return redirect(url_for("index.html"))
+    else:
+        return redirect(url_for("index.html"))
+
+
 
     if guessed_word == generated_word:
         wins + 1
