@@ -44,22 +44,6 @@ def try_again(yes) -> bool:
 
 
 
-    if guessed_word == generated_word:
-        wins + 1
-        print("Grattis, du vann!")
-    else:
-        print("Förlust, prova igen!")
-        
-
-def try_again(yes) -> bool:
-
-    if yes:
-        return redirect(url_for("index.html"))
-    else:
-        return redirect(url_for("index.html"))
-
-
-
 def letter_check(generated_word, guessed_word):
     """
     Compares each letter in the guessed word with the generated word.
