@@ -44,34 +44,47 @@ def try_again(yes) -> bool:
 
 
 
-def letter_check(generated_word, guessed_letter) -> List[int]: 
-# Checks each letter
-    result = []
+    if guessed_word == generated_word:
+        wins + 1
+        print("Grattis, du vann!")
+    else:
+        print("Förlust, prova igen!")
+        
+
+def try_again(yes) -> bool:
+
+    if yes:
+        return redirect(url_for("index.html"))
+    else:
+        return redirect(url_for("index.html"))
+
+
+
+def letter_check(generated_word, guessed_word):
     """
     Compares each letter in the guessed word with the generated word.
 
-    Could return a list:
+    Returns a list:
     2 = correct letter and correct position
     1 = correct letter but wrong position
     0 = letter is not in word
     """
+    result = []
 
-    for l in range(len(generated_word)): # l for letter
-        if guessed_letter[l] == generated_word[l]:
+    for l in range(len(generated_word)):  # l for letter
+        if guessed_word[l] == generated_word[l]:
             result.append(LETTER_PERFECT)
-            # We found the perfect match, append to the list
-        elif guessed_letter[l] in generated_word:
+        elif guessed_word[l] in generated_word:
             result.append(LETTER_CORRECT_WRONG_POS)
-            # It's there, but not perfect, append to the list
         else:
             result.append(LETTER_NOT_IN_WORD)
-            # This one sucks/loses, still append to the list :D
 
+    print(result)
     return result
 
 
 def validate_word_length(guessed_word):
-    if not len(guessed_word) > 5:
+    if len(guessed_word) == 5:
         return True
     else:
         return False
