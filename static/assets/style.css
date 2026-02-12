@@ -1,0 +1,337 @@
+/* http://meyerweb.com/eric/tools/css/reset/ 
+   v2.0 | 20110126
+   License: none (public domain)
+*/
+@import url('https://fonts.googleapis.com/css2?family=Bungee+Spice&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Monsieur+La+Doulaise&display=swap');
+
+html, body, div, span, applet, object, iframe,
+h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+a, abbr, acronym, address, big, cite, code,
+del, dfn, em, img, ins, kbd, q, s, samp,
+small, strike, strong, sub, sup, tt, var,
+b, u, i, center,
+dl, dt, dd, ol, ul, li,
+fieldset, form, label, legend,
+table, caption, tbody, tfoot, thead, tr, th, td,
+article, aside, canvas, details, embed, 
+figure, figcaption, footer, header, hgroup, 
+menu, nav, output, ruby, section, summary,
+time, mark, audio, video {
+	margin: 0;
+	padding: 0;
+	border: 0;
+	font-size: 100%;
+	font: inherit;
+	vertical-align: baseline;
+}
+/* HTML5 display-role reset for older browsers */
+article, aside, details, figcaption, figure, 
+footer, header, hgroup, menu, nav, section {
+	display: block;
+}
+body {
+	line-height: 1;
+}
+ol, ul {
+	list-style: none;
+}
+blockquote, q {
+	quotes: none;
+}
+blockquote:before, blockquote:after,
+q:before, q:after {
+	content: '';
+	content: none;
+}
+table {
+	border-collapse: collapse;
+	border-spacing: 0;
+}
+
+/*Wordle CSS*/
+:root{
+    --keyboard-height: 200px;
+    --game-max-width: 500px;
+    --horizontal-spacing-0-5: 4px;
+    --horizontal-spacing-1: 8px;
+    --vertical-spacing-1: 8px;
+
+
+    /* Tile + text colors */
+    --tile-text-color:#fff;
+    --key-text-color: #000;
+    --color-present: #c9b458;
+    --color-correct: #6aaa64;
+    --color-absent: #787c7e;
+
+    /* Key colors */
+    --key-bg: #d3d6da;
+    --key-bg-present: var(--color-present);
+    --key-bg-correct: var(--color-correct);
+    --key-bg-absent: var(--color-absent);
+    --key-evaluated-text-color: #fff;
+    --key-evaluated-text-color-absent: #fff;
+}
+html {
+    height: 100%;
+    
+}
+
+body {
+    height: 100%;
+    background-color: #fff;
+    margin: 0;
+    padding: 0;
+    font-family: 'Inter', Arial, sans-serif;
+    font-size: 16px;
+}
+/* this <div> have both board and keyboard Containers*/
+.gameContainer{
+    width: 100%;
+    max-width: var(--game-max-width);
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+}
+/* This is for whole board*/
+.boardContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-grow: 1;
+  overflow: hidden;
+}
+/* This is our main <div> having rows */
+.board {
+    display: grid;
+    grid-template-rows: repeat(6, 1fr);
+    grid-gap: 5px; 
+    padding: 10px; 
+    box-sizing: border-box;
+    min-width: min(250px, 100vw);
+
+}
+.boardRow {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(60px, 1fr));
+  grid-gap: 5px; 
+}
+/* Row value is invalid...then row will shake */
+.boardRow.invalid {
+    animation-name: Shake;
+    animation-duration: 600ms;
+}
+.win {
+  animation-name: Bounce;
+  animation-duration: 1000ms;
+}
+
+@keyframes Bounce {
+  0%,20% {
+    transform: translateY(0);
+  }
+  40% {
+    transform: translateY(-30px);
+  }
+  50% {
+    transform: translateY(5px);
+  }
+  60% {
+    transform: translateY(-15px);
+  }
+  80% {
+    transform: translateY(2px);
+  }
+  100% {
+    transform: translateY(0);
+  }
+}
+
+@keyframes Shake {
+  10%,90% {
+    transform: translateX(-1px);
+  }
+  20%,80% {
+    transform: translateX(2px);
+  }
+  30%,50%,70% {
+    transform: translateX(-4px);
+  }
+  40%,60% {
+    transform: translateX(4px);
+  }
+}
+/*Example:  <div class="tile" data-state="correct" data-animation="flip-out">A</div>    */
+.tile {
+  font-family: 'Inter', Arial, sans-serif;
+  width: 100%;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 2rem;
+  line-height: 1;
+  font-weight: bold;
+  vertical-align: middle;
+  box-sizing: border-box;
+  color: var(--tile-text-color);
+  text-transform: uppercase;
+  user-select: none;
+}
+.tile::before {
+  content: '';
+  display: inline-block;
+  padding-bottom: 100%;
+}
+
+/* Allow tiles to be smaller on small screens */
+@media (max-height: 600px) {
+  .tile {
+    font-size: 1em;
+  }
+}
+
+/* Empty tile: No background,Gray border,Default unused tile*/
+.tile[data-state='empty'] {
+  border: 2px solid #d3d6da;
+}
+
+/* Typing / pending (tbd): Light background,Slight border,Shows letters before submission */
+.tile[data-state='tbd'] {
+  background-color: #fff;
+  border: 2px solid #878a8c;
+  color: #000;
+}
+/* Correct letter: Green tile,White text,Letter is correct and in the right spot ✅ */
+.tile[data-state='correct'] {
+  background-color: var(--color-correct);
+  color: var(--key-evaluated-text-color);
+}
+/* Present letter: Yellow tile,White text,Letter exists, wrong position ⚠️*/
+.tile[data-state='present'] {
+  background-color: var(--color-present);
+  color: var(--key-evaluated-text-color);
+}
+/* Absent letter: Dark gray tile,White text,Letter not in the word ❌ */
+.tile[data-state='absent'] {
+  background-color: var(--color-absent);
+  color: var(--key-evaluated-text-color-absent);
+}
+/* Pop animation (letter entry):Triggers when a letter is typed,Makes tile “pop” into place */
+.tile[data-animation='pop'] {
+  animation-name: PopIn;
+  animation-duration: 100ms;
+}
+
+@keyframes PopIn {
+  from {
+    transform: scale(0.8);
+    opacity: 0;
+  }
+
+  40% {
+    transform: scale(1.1);
+    opacity: 1;
+  }
+}
+/* Flip animations (reveal result),Flip in (first half): Tile rotates forward,Hides front face,Happens before color change */
+.tile[data-animation='flip-in'] {
+  animation-name: FlipIn;
+  animation-duration: 250ms;
+  animation-timing-function: ease-in;
+}
+
+@keyframes FlipIn {
+  0% {
+    transform: rotateX(0);
+  }
+  100% {
+    transform: rotateX(-90deg);
+  }
+}
+/* Flip out (second half):Tile flips back into view,Shows updated color (green/yellow/gray) */
+.tile[data-animation='flip-out'] {
+  animation-name: FlipOut;
+  animation-duration: 250ms;
+  animation-timing-function: ease-in;
+}
+
+@keyframes FlipOut {
+  0% {
+    transform: rotateX(-90deg);
+  }
+  100% {
+    transform: rotateX(0);
+  }
+}
+
+.keyboard {
+  height: var(--keyboard-height);
+  margin: 0 var(--horizontal-spacing-1);
+  user-select: none;
+}
+
+.keyboardRow {
+  display: flex;
+  width: 100%;
+  margin: 0 auto var(--vertical-spacing-1);
+  /* ios-html-disable-double-tap-to-zoom */
+  touch-action: manipulation;
+}
+/* keyboard button : <button class="key" data-state="correct">A</button> */
+.key {
+  font-family: 'Inter', Arial, sans-serif;
+  font-size: 1.25em;
+  font-weight: bold;
+  border: 0;
+  padding: 0;
+  margin: 0 calc(var(--horizontal-spacing-0-5) * 1.5) 0 0;
+  height: 58px;
+  border-radius: 4px;
+  cursor: pointer;
+  user-select: none;
+  background-color: var(--key-bg);
+  color: var(--key-text-color);
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-transform: uppercase;
+}
+/* Last key spacing fix: Removes right margin from the last key in a row */
+.key:last-of-type {
+  margin: 0;
+}
+/* Correct letter (green): Letter is correct & placed */
+.key[data-state='correct'] {
+  background-color: var(--key-bg-correct);
+  color: var(--key-evaluated-text-color);
+}
+/* Present letter (yellow): Letter exists, wrong spot*/
+.key[data-state='present'] {
+  background-color: var(--key-bg-present);
+  color: var(--key-evaluated-text-color);
+}
+/* Absent letter (gray): Letter not in the word */
+.key[data-state='absent'] {
+  background-color: var(--key-bg-absent);
+  color: var(--key-evaluated-text-color-absent);
+}
+/* Fade transition:Smooth color changes,Applied when updating key state */
+.key.fade {
+  transition: background-color 0.1s ease, color 0.1s ease;
+}
+/* Normal key width */
+.one {
+  flex: 1;
+}
+/* Wider key:Used for Enter / Backspace */
+.oneAndAHalf {
+  flex: 1.5;
+  font-size: 12px;
+}
+/* Error messages on board */
+.errorMessage{
+  text-align:center;
+  color:#a90111;
+  margin:10px;
+}
