@@ -1,4 +1,4 @@
-from flask import Flask, redirect, render_template, request, url_for
+from flask import Flask, redirect, render_template, request, url_for,jsonify
 from backend.wordle_logic import win_validation
 
 app = Flask(__name__)
@@ -11,23 +11,43 @@ def generate_secret_word() -> str:
 
 @app.route("/", methods=["GET", "POST"])
 def home():
-    generated_word = generate_secret_word()
-    guessed_word = ""
-    global wins
 
-    if request.method == "POST":
-        l1 = request.form.get("l1", "").strip()
-        l2 = request.form.get("l2", "").strip()
-        l3 = request.form.get("l3", "").strip()
-        l4 = request.form.get("l4", "").strip()
-        l5 = request.form.get("l5", "").strip() 
-        guessed_word = (l1 + l2 + l3 + l4 + l5).lower()
+    return render_template("index.html")
 
-        if win_validation(guessed_word, generated_word):
-            wins += 1
-            generated_word = generate_secret_word()
 
-    return render_template("index.html", guessed_word=guessed_word, generated_word=generated_word, wins=wins)
+def evaluate_guess(guess, secret):
+    result = ["absent"] * 5
+    secret_letters = list(secret)
+
+    # Pass 1: correct
+    for i in range(5):
+        if guess[i] == secret[i]:
+            result[i] = "correct"
+            secret_letters[i] = None
+
+    # Pass 2: present
+    for i in range(5):
+        if result[i] == "absent" and guess[i] in secret_letters:
+            result[i] = "present"
+            secret_letters[secret_letters.index(guess[i])] = None
+
+    return result
+@app.route("/check-word", methods=["POST"])
+def check_word():
+    WORDS=['apple','phone','phase','story','glass','mango','grape']
+    SECRET_WORD='apple'
+    data = request.get_json()
+    word = data.get("word", "").lower()
+
+    if word not in WORDS:
+        return jsonify({"valid": False,"reason": "Not in wordlist"})
+
+    evaluation = evaluate_guess(word, SECRET_WORD)
+
+    return jsonify({
+        "valid": True,
+        "evaluation": evaluation
+    })
 
 if __name__ == "__main__":
     app.run(debug=True)
