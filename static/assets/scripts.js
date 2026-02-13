@@ -114,7 +114,7 @@ function sendGuessToServer(word) {
                 const msg = document.getElementById("message");
                 msg.textContent = data.reason;
                 setTimeout(() => msg.textContent = "", 2000);
-                console.log(data.reason); // optional: show reason in console or alert
+                console.log(data.reason); // optional: show reason in console or alertg
             } else {
                 // Valid word → flip tiles with evaluation
                 document.getElementById("message").textContent = "";
