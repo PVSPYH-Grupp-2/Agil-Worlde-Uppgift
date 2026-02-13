@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Wordle Game</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='assets/style.css') }}">
 </head>
+
 <body>
     <div class="gameContainer">
         <div id="message" class="errorMessage"></div>
@@ -66,43 +68,50 @@
         <div class="keyboard">
             <!-- Row 1 -->
             <div class="keyboardRow">
-            <button class="key one" data-key="Q">Q</button>
-            <button class="key one" data-key="W">W</button>
-            <button class="key one" data-key="E">E</button>
-            <button class="key one" data-key="R">R</button>
-            <button class="key one" data-key="T">T</button>
-            <button class="key one" data-key="Y">Y</button>
-            <button class="key one" data-key="U">U</button>
-            <button class="key one" data-key="I">I</button>
-            <button class="key one" data-key="O">O</button>
-            <button class="key one" data-key="P">P</button>
+                <button class="key one" data-key="Q">Q</button>
+                <button class="key one" data-key="W">W</button>
+                <button class="key one" data-key="E">E</button>
+                <button class="key one" data-key="R">R</button>
+                <button class="key one" data-key="T">T</button>
+                <button class="key one" data-key="Y">Y</button>
+                <button class="key one" data-key="U">U</button>
+                <button class="key one" data-key="I">I</button>
+                <button class="key one" data-key="O">O</button>
+                <button class="key one" data-key="P">P</button>
             </div>
             <!-- Row 2 -->
             <div class="keyboardRow">
-            <button class="key one" data-key="A">A</button>
-            <button class="key one" data-key="S">S</button>
-            <button class="key one" data-key="D">D</button>
-            <button class="key one" data-key="F">F</button>
-            <button class="key one" data-key="G">G</button>
-            <button class="key one" data-key="H">H</button>
-            <button class="key one" data-key="J">J</button>
-            <button class="key one" data-key="K">K</button>
-            <button class="key one" data-key="L">L</button>
+                <button class="key one" data-key="A">A</button>
+                <button class="key one" data-key="S">S</button>
+                <button class="key one" data-key="D">D</button>
+                <button class="key one" data-key="F">F</button>
+                <button class="key one" data-key="G">G</button>
+                <button class="key one" data-key="H">H</button>
+                <button class="key one" data-key="J">J</button>
+                <button class="key one" data-key="K">K</button>
+                <button class="key one" data-key="L">L</button>
             </div>
             <!-- Row 3 -->
             <div class="keyboardRow">
-            <button class="key oneAndAHalf" data-key="enter">Enter</button>
-            <button class="key one" data-key="Z">Z</button>
-            <button class="key one" data-key="X">X</button>
-            <button class="key one" data-key="C">C</button>
-            <button class="key one" data-key="V">V</button>
-            <button class="key one" data-key="B">B</button>
-            <button class="key one" data-key="N">N</button>
-            <button class="key one" data-key="M">M</button>
-            <button class="key oneAndAHalf" data-key="backspace">⌫</button>
+                <button class="key oneAndAHalf" data-key="enter">Enter</button>
+                <button class="key one" data-key="Z">Z</button>
+                <button class="key one" data-key="X">X</button>
+                <button class="key one" data-key="C">C</button>
+                <button class="key one" data-key="V">V</button>
+                <button class="key one" data-key="B">B</button>
+                <button class="key one" data-key="N">N</button>
+                <button class="key one" data-key="M">M</button>
+                <button class="key oneAndAHalf" data-key="backspace">⌫</button>
             </div>
         </div>
+        <!-- New buttons div -->
+        <div class="buttons">
+            <button id="restartBtn" style="display: none">Play again?</button>
+        </div>
+
+    </div>
     </div>
     <script src="{{ url_for('static', filename='assets/scripts.js') }}" defer></script>
 </body>
+
 </html>
