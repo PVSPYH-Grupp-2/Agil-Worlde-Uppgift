@@ -35,6 +35,10 @@ def evaluate_guess(guess, secret):
 
     return result
 
+@app.route("/leaderboard", methods=["GET"])
+def leaderboard():
+    
+    return jsonify({"leaderboard": []})
 
 @app.route("/check-word", methods=["POST"])
 def check_word():

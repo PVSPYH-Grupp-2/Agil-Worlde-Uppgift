@@ -25,12 +25,28 @@ const restartBtn = document.getElementById("restartBtn");
 
 function gameOver() {
     document.getElementById("restartBtn").style.display = "block";
+    document.getElementById("leaderboard").style.display = "block";
+    document.getElementById("leaderboardSave").style.display = "block";
 }
 function restartGame() {
     location.reload();
 }
 
 restartBtn.addEventListener("click", restartGame);
+
+const saveBtn = document.getElementById("saveBtn");
+const nameInput = document.getElementById("playerName");
+const entry = document.createElement("li");
+
+saveBtn.addEventListener("click", function () {
+    const playerName = nameInput.value.trim();
+    if (playerName !== "") {
+        entry.textContent = playerName;
+        document.getElementById("leaderboardList").appendChild(entry);
+        nameInput.value = ""; 
+    }
+}); 
+
 
 const rows = document.querySelectorAll(".boardRow");
 
