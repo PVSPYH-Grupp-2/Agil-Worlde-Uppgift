@@ -39,3 +39,26 @@ N = LETTER_NOT_IN_WORD
 )
 def test_letter_check_valid_values(generated, guessed, expected):
     assert letter_check(generated, guessed) == expected
+
+
+@pytest.mark.parametrize(
+    "generated, guessed, expected",
+    [
+        # Olika längd (guessed för kort) -> IndexError när den försöker läsa guessed_word[l]
+        ("apple", "app", IndexError),
+
+        # Tom gissning -> IndexError direkt
+        ("apple", "", IndexError),
+
+        # None -> TypeError (len(None) eller indexering på None)
+        ("apple", None, TypeError),
+        (None, "apple", TypeError),
+
+        # Fel typ -> TypeError
+        ("apple", 12345, TypeError),
+        (12345, "apple", TypeError),
+    ],
+)
+def test_letter_check_invalid_values(generated, guessed, expected):
+    with pytest.raises(expected):
+        letter_check(generated, guessed)
