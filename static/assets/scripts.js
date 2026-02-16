@@ -139,7 +139,9 @@ function sendGuessToServer(word) {
                 // Flask sends a json-answer over HTTP, and JS converts it to an object that is saved in the variable (data)
                 // Took me a long time to understand this
                 if (data.win) {
-                    gameOver()
+                    document.querySelector(".win-counter").innerText = 
+                        "Wins: " + data.wins;
+                    gameOver();
                 }
                 else if (currentRow >= rows.length) {
                     gameOver()

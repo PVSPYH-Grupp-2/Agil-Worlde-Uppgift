@@ -580,3 +580,10 @@ body {
   align-items: center;
   font-family: 'Inter', Arial, sans-serif;
 }
+
+.win-counter {
+  display: inline-block;
+  font-family: 'Inter', Arial, sans-serif;
+  margin-left: 50px;
+  font-size: 120%;
+}

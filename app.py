@@ -52,11 +52,17 @@ def check_word():
 
     evaluation = evaluate_guess(word, SECRET_WORD)
     win = win_validation(word, SECRET_WORD)  # added win
+    global wins
+
+    if win:
+        wins += 1
+
 
     return jsonify({
         "valid": True,
         "evaluation": evaluation,
-        "win": win
+        "win": win,
+        "wins": wins
         # Added win, returns true if player wins
     })
 
