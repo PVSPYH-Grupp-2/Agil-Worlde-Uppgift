@@ -1,13 +1,15 @@
-from flask import Flask, redirect, render_template, request, url_for,jsonify
+from flask import Flask, redirect, render_template, request, url_for, jsonify
 from backend.wordle_logic import win_validation
 
 app = Flask(__name__)
 
 wins = 0
 
+
 def generate_secret_word() -> str:
     secret_word = "apple"  # The secret word
     return secret_word
+
 
 @app.route("/", methods=["GET", "POST"])
 def home():
@@ -32,22 +34,28 @@ def evaluate_guess(guess, secret):
             secret_letters[secret_letters.index(guess[i])] = None
 
     return result
+
+
 @app.route("/check-word", methods=["POST"])
 def check_word():
-    WORDS=['apple','phone','phase','story','glass','mango','grape']
-    SECRET_WORD='apple'
+    WORDS = ['apple', 'phone', 'phase', 'story', 'glass', 'mango', 'grape']
+    SECRET_WORD = 'apple'
     data = request.get_json()
     word = data.get("word", "").lower()
 
     if word not in WORDS:
-        return jsonify({"valid": False,"reason": "Not in wordlist"})
+        return jsonify({"valid": False, "reason": "Not in wordlist"})
 
     evaluation = evaluate_guess(word, SECRET_WORD)
+    win = win_validation(word, SECRET_WORD)  # added win
 
     return jsonify({
         "valid": True,
-        "evaluation": evaluation
+        "evaluation": evaluation,
+        "win": win
+        # Added win, returns true if player wins
     })
+
 
 if __name__ == "__main__":
     app.run(debug=True)
