@@ -1,5 +1,5 @@
 from flask import Flask, redirect, render_template, request, url_for, jsonify
-from backend.wordle_logic import win_validation, load_wordlist, generate_word
+from backend.wordle_logic import win_validation, load_wordlist, generate_word,letter_check
 
 app = Flask(__name__)
 
@@ -8,35 +8,12 @@ wins = 0
 WORDLIST = load_wordlist()["words"]
 SECRET_WORD = generate_word(WORDLIST)
 
-
-def generate_secret_word() -> str:
-    secret_word = "apple"  # The secret word
-    return secret_word
-
-
 @app.route("/", methods=["GET", "POST"])
 def home():
-
+    global SECRET_WORD
+    SECRET_WORD = generate_word(WORDLIST)  # new word every refresh
+    print("SECRET_WORD:", SECRET_WORD)   # JUst for testing
     return render_template("index.html")
-
-
-def evaluate_guess(guess, secret):
-    result = ["absent"] * 5
-    secret_letters = list(secret)
-
-    # Pass 1: correct
-    for i in range(5):
-        if guess[i] == secret[i]:
-            result[i] = "correct"
-            secret_letters[i] = None
-
-    # Pass 2: present
-    for i in range(5):
-        if result[i] == "absent" and guess[i] in secret_letters:
-            result[i] = "present"
-            secret_letters[secret_letters.index(guess[i])] = None
-
-    return result
 
 @app.route("/leaderboard", methods=["GET"])
 def leaderboard():
@@ -53,7 +30,7 @@ def check_word():
     if word not in WORDLIST:
         return jsonify({"valid": False, "reason": "Not in wordlist"})
 
-    evaluation = evaluate_guess(word, SECRET_WORD)
+    evaluation = letter_check(SECRET_WORD,word)
     win = win_validation(word, SECRET_WORD)  # added win
 
 

@@ -53,8 +53,10 @@ const rows = document.querySelectorAll(".boardRow");
 let currentRow = 0;
 let currentCol = 0;
 const WORD_LENGTH = 5;
+let gameOverFlag = false; // Flag to stop input after win
 //Typing letters into tiles
-function handleInput(key) {
+function handleInput(key) { 
+    if (gameOverFlag) return; // stop input typing after win
     if (/^[a-zA-Z]$/.test(key)) {
         addLetter(key);
     } else if (key === "Backspace") {
@@ -139,6 +141,7 @@ function sendGuessToServer(word) {
                 // Flask sends a json-answer over HTTP, and JS converts it to an object that is saved in the variable (data)
                 // Took me a long time to understand this
                 if (data.win) {
+                    gameOverFlag = true;
                     document.querySelector(".win-counter").innerText = 
                         "Wins: " + data.wins;
                     gameOver();
@@ -150,6 +153,10 @@ function sendGuessToServer(word) {
         });
 }
 function applyResult(result) {
+    const stateMap = ["absent", "present", "correct"]; // map numbers to CSS states
+    // index 0 → absent
+    // index 1 → present
+    // index 2 → correct
     result.forEach((state, i) => {
         const tile = rows[currentRow].children[i];
         const letter = tile.textContent.toUpperCase();
@@ -157,9 +164,9 @@ function applyResult(result) {
         // Animate tile
         tile.dataset.animation = "flip-in";
         setTimeout(() => {
-            tile.dataset.state = state;
+            tile.dataset.state =  stateMap[state]; // use mapped string
             tile.dataset.animation = "flip-out";
-        }, 250);
+        },i * 250);// stagger animation for each tile
 
         // Update keyboard key
         const key = document.querySelector(`.key[data-key="${letter}"]`);
@@ -168,8 +175,8 @@ function applyResult(result) {
             // correct > present > absent
             const priority = { "absent": 0, "present": 1, "correct": 2 };
             const current = key.dataset.state;
-            if (!current || priority[state] > priority[current]) {
-                key.dataset.state = state;
+            if (!current || priority[stateMap[state]] > priority[current]) {
+                key.dataset.state =stateMap[state];
                 key.classList.add("fade"); // optional smooth transition
             }
         }
@@ -194,39 +201,10 @@ function applyResult(result) {
     // if (currentRow === rows.length - 1) {
     //     gameOver();
     // }
-    currentRow++;
-    currentCol = 0;
+
+    // Move to next row only if game not over
+    if (!gameOverFlag) {
+        currentRow++;
+        currentCol = 0;
+    }
 }
-
-
-// function applyResult(result) {
-//   const stateMap = ["absent", "present", "correct"]; // map numbers to CSS states
-
-//   result.forEach((state, i) => {
-//     const tile = rows[currentRow].children[i];
-//     const letter = tile.textContent.toUpperCase();
-
-//     // Animate tile
-//     tile.dataset.animation = "flip-in";
-//     setTimeout(() => {
-//       tile.dataset.state = stateMap[state]; // use mapped string
-//       tile.dataset.animation = "flip-out";
-//     }, i * 250); // stagger animation for each tile
-
-//     // Update keyboard key
-//     const key = document.querySelector(`.key[data-key="${letter}"]`);
-//     if (key) {
-//       const priority = { "absent": 0, "present": 1, "correct": 2 };
-//       const current = key.dataset.state;
-//       if (!current || priority[stateMap[state]] > priority[current]) {
-//         key.dataset.state = stateMap[state];
-//         key.classList.add("fade"); // smooth transition
-//       }
-//     }
-//   });
-
-//   currentRow++;
-//   currentCol = 0;
-// }
-
-
