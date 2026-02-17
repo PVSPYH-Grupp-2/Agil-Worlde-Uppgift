@@ -10,11 +10,20 @@
     <!-- Loads an external JavaScript library (canvas-confetti) from the internet.
     After loading it, our page can call the confetti() function to show confetti effects. -->
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+    <!-- Box Icon for HINT -->
+    <link href="https://cdn.boxicons.com/3.0.8/fonts/basic/boxicons.min.css" rel="stylesheet">
 </head>
 
 <body>
     <div class="gameContainer">
-        <div id="message" class="errorMessage"></div>
+        <div class="topBar">
+            <div id="message" class="errorMessage"></div>
+            <!-- Hint Icon -->
+            <div class="hintContainer">
+            <i id="hintIcon" class="bx bx-light-bulb-alt" title="Get a hint 💡"></i>
+            </div>
+        </div>
         <!-- BOARD -->
         <div class="boardContainer">
             <div class="board">

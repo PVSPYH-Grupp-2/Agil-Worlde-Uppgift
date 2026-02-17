@@ -69,6 +69,11 @@ function addLetter(letter) {
     if (currentCol >= WORD_LENGTH) return;
 
     const tile = rows[currentRow].children[currentCol];
+    // Remove hint styling if present
+    if (tile.classList.contains("hint-placeholder")) {
+        tile.classList.remove("hint-placeholder");
+        tile.dataset.hintLetter = tile.dataset.hintLetter || tile.textContent; // preserve hint just in case
+    }
     tile.textContent = letter;
     tile.dataset.state = "tbd";
     tile.dataset.animation = "pop";
@@ -82,6 +87,11 @@ function removeLetter() {
     const tile = rows[currentRow].children[currentCol];
     tile.textContent = "";
     tile.dataset.state = "empty";
+    // Restore hint if it exists
+    if (tile.dataset.hintLetter) {
+        tile.textContent = tile.dataset.hintLetter;
+        tile.classList.add("hint-placeholder");
+    }
 }
 function submitGuess() {
     if (currentCol < WORD_LENGTH) {
@@ -142,7 +152,7 @@ function sendGuessToServer(word) {
                 // Took me a long time to understand this
                 if (data.win) {
                     gameOverFlag = true;
-
+                    clearAllHintPlaceholders(); // Remove all remaining hint placeholders
                     // Add a slight delay to ensure DOM updates finish before confetti
                     setTimeout(() => {
                         launchConfetti();
@@ -165,6 +175,9 @@ function applyResult(result) {
     // index 2 → correct
     result.forEach((state, i) => {
         const tile = rows[currentRow].children[i];
+        // Remove hint once flipped
+        tile.classList.remove("hint-placeholder");
+        delete tile.dataset.hintLetter;
         const letter = tile.textContent.toUpperCase();
 
         // Animate tile
@@ -172,7 +185,7 @@ function applyResult(result) {
         setTimeout(() => {
             tile.dataset.state =  stateMap[state]; // use mapped string
             tile.dataset.animation = "flip-out";
-        },i * 250);// stagger animation for each tile
+        },250);
 
         // Update keyboard key
         const key = document.querySelector(`.key[data-key="${letter}"]`);
@@ -246,4 +259,75 @@ function launchConfetti() {
       requestAnimationFrame(frame);
     }
   })();
+}
+
+// --- Hint Feature ---
+let hintUsed = false;
+const hintIcon = document.getElementById("hintIcon");
+hintIcon.addEventListener("click", async () => {
+   if (hintUsed || gameOverFlag) return;
+
+   /*rows = all 6 board rows.Convert NodeList → Array.
+    For each row:
+      Look at each tile
+      Read tile.dataset.state
+      If no state → use "empty" 
+    Example:You create a 2D array like:
+      [
+        ["correct", "present", "absent", "empty", "empty"],
+        ["empty", "empty", "empty", "empty", "empty"],
+        ...
+      ]
+    */
+   const rowsState = Array.from(rows).map(row =>
+     Array.from(row.children).map(tile => tile.dataset.state || "empty")
+   );
+
+  try {
+    const res = await fetch("/get-hint", {
+      method: "POST",
+      headers: {"Content-Type":"application/json"},
+      body: JSON.stringify({rows: rowsState})
+    });
+    const data = await res.json();//Wait for backend response.Convert response into JavaScript object
+    /*Example response:
+    {
+      "success": true,
+      "col": 2,
+      "letter": "A"
+    } */
+    if (!data.success) return showMessage(data.message);
+
+    const col = data.col, letter = data.letter;
+    for (let r=0;r<rows.length;r++){
+      const tile = rows[r].children[col];//For each row:Pick tile at hint column.Ex:If col = 2 → 3rd column of every row.
+      if (!tile.textContent) {  //Only apply hint if tile is empty.This prevents overriding user-typed letters.
+        tile.textContent=letter; 
+        tile.classList.add("hint-placeholder");
+        tile.dataset.hintLetter = letter; // Store hint letter in dataset.So if user deletes typed letter → we can restore hint.
+      }
+    }
+
+    hintUsed = true;
+    hintIcon.classList.add("used");
+    showMessage("Hint Used!");
+  } catch(err){console.error("Hint error:",err);}
+});
+
+// Helper to show temporary message 
+function showMessage(msg) { 
+  const messageEl = document.getElementById("message"); 
+  messageEl.textContent = msg;
+  setTimeout(() => { messageEl.textContent = ""; }, 2000); 
+}
+function clearAllHintPlaceholders() {
+  rows.forEach(row => {
+    Array.from(row.children).forEach(tile => {
+      if (tile.classList.contains("hint-placeholder")) {
+        tile.classList.remove("hint-placeholder");
+        tile.textContent = ""; // clear only placeholder tiles
+        delete tile.dataset.hintLetter;
+      }
+    });
+  });
 }
