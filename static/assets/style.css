@@ -458,13 +458,6 @@ body {
   font-size: 12px;
 }
 
-/* Error messages on board */
-.errorMessage {
-  text-align: center;
-  color: #a90111;
-  margin: 10px;
-}
-
 /* NEW BUTTONS STYLING, Just an idea */
 .buttons {
   margin-top: 24px;
@@ -586,4 +579,50 @@ body {
   font-family: 'Inter', Arial, sans-serif;
   margin-left: 50px;
   font-size: 120%;
+}
+
+.topBar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: relative;
+  margin: 10px 0;
+}
+
+/* error message on board */
+.errorMessage {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  color: #a90111;
+}
+
+/* hint on right */
+.hintContainer {
+  margin-left: auto;
+}
+.tile.hint-placeholder {
+  color: rgba(0,0,0,0.3);
+  background-color: rgba(24, 181, 10, 0.18); /* light green*/
+  font-style: italic;
+  transition: opacity 0.5s ease;
+  opacity: 0;
+  animation: fadeIn 0.5s forwards;
+}
+
+@keyframes fadeIn {
+  to { opacity: 1; }
+}
+
+#hintIcon {
+  font-size: 2rem;
+  cursor: pointer;
+  margin: 10px;
+  color: #fbbc04;
+  transition: opacity 0.3s ease;
+}
+
+#hintIcon.used {
+  opacity: 0.5;
+  pointer-events: none;
 }
