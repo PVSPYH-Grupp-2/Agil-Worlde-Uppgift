@@ -142,6 +142,12 @@ function sendGuessToServer(word) {
                 // Took me a long time to understand this
                 if (data.win) {
                     gameOverFlag = true;
+
+                    // Add a slight delay to ensure DOM updates finish before confetti
+                    setTimeout(() => {
+                        launchConfetti();
+                    }, 10);
+
                     document.querySelector(".win-counter").innerText = 
                         "Wins: " + data.wins;
                     gameOver();
@@ -207,4 +213,37 @@ function applyResult(result) {
         currentRow++;
         currentCol = 0;
     }
+}
+
+function launchConfetti() {
+  const duration = 1 * 1000; // total time the confetti should run: 1 second.
+  const end = Date.now() + duration;//Date.now() gives the current timestamp in milliseconds.
+  const colors = ['#bb0000', '#087f3c', '#ffcc00', '#00ffcc', '#0066ff', '#ff66ff'];//Each burst will randomly pick colors from this array.
+
+  //Inside frame, we shoot confetti and then schedule the next frame using requestAnimationFrame.
+  (function frame() {
+    // Fire random bursts each frame(two bursts: one angled roughly 60°, another 120° to make it go in both directions)
+    confetti({
+      particleCount: 5 + Math.floor(Math.random() * 5), //number of confetti pieces in this burst (random between 5–9).
+      angle: 60 + Math.random() * 20,                   //direction in degrees the confetti flies (around 60°).
+      spread: 55 + Math.random() * 10,                  //how wide the confetti spreads (55–65°).
+      origin: { x: Math.random(), y: Math.random() * 0.5 },//origin: where the confetti starts on the screen:
+                                                          //x = horizontal (0 = left, 1 = right)
+                                                          //y = vertical (0 = top, 1 = bottom)
+      colors: colors,
+      scalar: 0.8 + Math.random() * 0.5                   //size of particles (random between 0.8–1.3).
+    });
+    confetti({
+      particleCount: 5 + Math.floor(Math.random() * 5),
+      angle: 120 - Math.random() * 20,
+      spread: 55 + Math.random() * 10,
+      origin: { x: Math.random(), y: Math.random() * 0.5 },
+      colors: colors,
+      scalar: 0.8 + Math.random() * 0.5
+    });
+
+    if (Date.now() < end) {
+      requestAnimationFrame(frame);
+    }
+  })();
 }
