@@ -22,13 +22,16 @@
 
 // Restart button and functionality
 const restartBtn = document.getElementById("restartBtn");
+const CURRENT_SECRET = document.body.dataset.secret;
 
 function gameOver() {
     document.getElementById("restartBtn").style.display = "block";
     document.getElementById("leaderboard").style.display = "block";
     document.getElementById("leaderboardSave").style.display = "block";
+    saveState(); // Save final state when game is over
 }
 function restartGame() {
+    clearState(); // Clear saved state on restart
     location.reload();
 }
 
@@ -54,6 +57,109 @@ let currentRow = 0;
 let currentCol = 0;
 const WORD_LENGTH = 5;
 let gameOverFlag = false; // Flag to stop input after win
+
+
+// LocalStorage (persistent state)
+const STORAGE_KEY = "wordle_state_v1";
+
+function saveState() {
+  const board = Array.from(rows).map(row =>
+    Array.from(row.children).map(tile => ({
+      letter: tile.textContent || "",
+      state: tile.dataset.state || "empty",
+      isHint: tile.classList.contains("hint-placeholder"),
+      hintLetter: tile.dataset.hintLetter || ""
+    }))
+  );
+
+  const keyboard = Array.from(document.querySelectorAll(".key")).map(k => ({
+    key: (k.dataset.key || k.textContent || "").toUpperCase(),
+    state: k.dataset.state || ""
+  }));
+
+  const state = {
+    secret: CURRENT_SECRET,
+    currentRow,
+    currentCol,
+    gameOverFlag,
+    hintUsed,
+    board,
+    keyboard,
+    message: document.getElementById("message")?.textContent || "",
+    hintIconUsed: hintIcon?.classList.contains("used") || false
+  };
+
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+}
+
+function loadState() {
+  const raw = localStorage.getItem(STORAGE_KEY);
+  return raw ? JSON.parse(raw) : null;
+}
+
+function clearState() {
+  localStorage.removeItem(STORAGE_KEY);
+}
+
+function restoreState(state) {
+  // Restore board
+
+    if (state.secret !== CURRENT_SECRET) {
+  clearState();
+  return;
+}
+
+  state.board?.forEach((rowData, r) => {
+    if (!rows[r]) return;
+    rowData.forEach((t, c) => {
+      const tile = rows[r].children[c];
+      if (!tile) return;
+
+      tile.textContent = t.letter || "";
+      tile.dataset.state = t.state || "empty";
+
+      // Restore hint styling
+      tile.classList.toggle("hint-placeholder", !!t.isHint);
+      if (t.isHint && t.hintLetter) {
+        tile.dataset.hintLetter = t.hintLetter;
+      } else {
+        delete tile.dataset.hintLetter;
+      }
+    });
+  });
+
+  // Restore keyboard
+  state.keyboard?.forEach(k => {
+    const el = document.querySelector(`.key[data-key="${k.key}"]`);
+    if (el && k.state) {
+      el.dataset.state = k.state;
+      el.classList.add("fade");
+    }
+  });
+
+  currentRow = state.currentRow ?? 0;
+  currentCol = state.currentCol ?? 0;
+  gameOverFlag = state.gameOverFlag ?? false;
+  hintUsed = state.hintUsed ?? false;
+
+  // Restore hint icon
+  if (hintIcon) {
+    if (state.hintIconUsed) hintIcon.classList.add("used");
+    else hintIcon.classList.remove("used");
+  }
+
+  // Restore message
+  const msg = document.getElementById("message");
+  if (msg) msg.textContent = state.message || "";
+
+  // If game is over, show buttons
+  if (gameOverFlag) {
+    gameOver();
+  }
+}
+
+
+
 //Typing letters into tiles
 function handleInput(key) { 
     if (gameOverFlag) return; // stop input typing after win
@@ -79,6 +185,8 @@ function addLetter(letter) {
     tile.dataset.animation = "pop";
 
     currentCol++;
+
+    saveState(); // Save after each letter input
 }
 function removeLetter() {
     if (currentCol === 0) return;
@@ -92,6 +200,8 @@ function removeLetter() {
         tile.textContent = tile.dataset.hintLetter;
         tile.classList.add("hint-placeholder");
     }
+
+    saveState(); // Save after deletion
 }
 function submitGuess() {
     if (currentCol < WORD_LENGTH) {
@@ -226,6 +336,7 @@ function applyResult(result) {
         currentRow++;
         currentCol = 0;
     }
+    saveState(); // Save state after moving to next row
 }
 
 function launchConfetti() {
@@ -331,3 +442,8 @@ function clearAllHintPlaceholders() {
     });
   });
 }
+
+document.addEventListener("DOMContentLoaded", () => {
+  const saved = loadState();
+  if (saved) restoreState(saved);
+});
