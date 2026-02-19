@@ -2,29 +2,22 @@
 // Restart button and functionality
 const restartBtn = document.getElementById("restartBtn");
 const CURRENT_SECRET = document.body.dataset.secret;
-const continueBtn = document.getElementById("continueBtn")
 
-function gameOver(didWin) {
-  if (didWin) {
-    continueBtn.style.display = "block";
+function gameOver() {
+    document.getElementById("restartBtn").style.display = "block";
     document.getElementById("leaderboard").style.display = "block";
     document.getElementById("leaderboardSave").style.display = "block";
-  }
-  else {
-    restartBtn.style.display = "block"
-  }
-
-
-  // Refresh the scores from the server when the game ends
-  fetchLeaderboard();
-
-  saveState(); // Save final state when game is over
+    
+    // Refresh the scores from the server when the game ends
+    fetchLeaderboard(); 
+    
+    saveState(); // Save final state when game is over
 }
 function restartGame() {
-  clearState(); // Clear saved state on restart
-  location.reload();
+    clearState(); // Clear saved state on restart
+    location.reload();
 }
-continueBtn.addEventListener("click", restartGame)
+
 restartBtn.addEventListener("click", restartGame);
 
 const saveBtn = document.getElementById("saveBtn");
@@ -33,43 +26,43 @@ const entry = document.createElement("li");
 
 // Updated to use async so we can wait for the server to save
 saveBtn.addEventListener("click", async function () {
-  const playerName = nameInput.value.trim();
-  if (playerName !== "") {
-    try {
-      const response = await fetch("/save-score", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name: playerName })
-      });
-      const result = await response.json();
+    const playerName = nameInput.value.trim();
+    if (playerName !== "") {
+        try {
+            const response = await fetch("/save-score", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ name: playerName })
+            });
+            const result = await response.json();
 
-      if (result.success) {
-        // Refresh the leaderboard from the JSON file
-        fetchLeaderboard();
-        nameInput.value = "";
-        document.getElementById("leaderboardSave").style.display = "none";
-      }
-    } catch (err) {
-      console.error("Save error:", err);
+            if (result.success) {
+                // Refresh the leaderboard from the JSON file
+                fetchLeaderboard(); 
+                nameInput.value = ""; 
+                document.getElementById("leaderboardSave").style.display = "none";
+            }
+        } catch (err) {
+            console.error("Save error:", err);
+        }
     }
-  }
-});
+}); 
 
 async function fetchLeaderboard() {
-  try {
-    const res = await fetch("/leaderboard");
-    const data = await res.json();
-    const list = document.getElementById("leaderboardList");
-
-    list.innerHTML = ""; // Clear list
-    data.leaderboard.forEach(item => {
-      const li = document.createElement("li");
-      li.textContent = `${item.name}: ${item.wins} Wins`;
-      list.appendChild(li);
-    });
-  } catch (err) {
-    console.error("Fetch error:", err);
-  }
+    try {
+        const res = await fetch("/leaderboard");
+        const data = await res.json();
+        const list = document.getElementById("leaderboardList");
+        
+        list.innerHTML = ""; // Clear list
+        data.leaderboard.forEach(item => {
+            const li = document.createElement("li");
+            li.textContent = `${item.name}: ${item.wins} Wins`;
+            list.appendChild(li);
+        });
+    } catch (err) {
+        console.error("Fetch error:", err);
+    }
 }
 
 
@@ -126,10 +119,10 @@ function clearState() {
 function restoreState(state) {
   // Restore board
 
-  if (state.secret !== CURRENT_SECRET) {
-    clearState();
-    return;
-  }
+    if (state.secret !== CURRENT_SECRET) {
+  clearState();
+  return;
+}
 
   state.board?.forEach((rowData, r) => {
     if (!rows[r]) return;
@@ -183,161 +176,124 @@ function restoreState(state) {
 
 
 //Typing letters into tiles
-function handleInput(key) {
-  if (gameOverFlag) return; // stop input typing after win
-  if (/^[a-zA-Z]$/.test(key)) {
-    addLetter(key);
-  } else if (key === "Backspace") {
-    removeLetter();
-  } else if (key === "Enter") {
-    submitGuess();
-  }
+function handleInput(key) { 
+    if (gameOverFlag) return; // stop input typing after win
+    if (/^[a-zA-Z]$/.test(key)) {
+        addLetter(key);
+    } else if (key === "Backspace") {
+        removeLetter();
+    } else if (key === "Enter") {
+        submitGuess();
+    }
 }
 function addLetter(letter) {
-  if (currentCol >= WORD_LENGTH) return;
+    if (currentCol >= WORD_LENGTH) return;
 
-  const tile = rows[currentRow].children[currentCol];
-  // Remove hint styling if present
-  if (tile.classList.contains("hint-placeholder")) {
-    tile.classList.remove("hint-placeholder");
-    tile.dataset.hintLetter = tile.dataset.hintLetter || tile.textContent; // preserve hint just in case
-  }
-  tile.textContent = letter;
-  tile.dataset.state = "tbd";
-  tile.dataset.animation = "pop";
+    const tile = rows[currentRow].children[currentCol];
+    // Remove hint styling if present
+    if (tile.classList.contains("hint-placeholder")) {
+        tile.classList.remove("hint-placeholder");
+        tile.dataset.hintLetter = tile.dataset.hintLetter || tile.textContent; // preserve hint just in case
+    }
+    tile.textContent = letter;
+    tile.dataset.state = "tbd";
+    tile.dataset.animation = "pop";
 
-  currentCol++;
+    currentCol++;
 
-  saveState(); // Save after each letter input
+    saveState(); // Save after each letter input
 }
 function removeLetter() {
-  if (currentCol === 0) return;
+    if (currentCol === 0) return;
 
-  currentCol--;
-  const tile = rows[currentRow].children[currentCol];
-  tile.textContent = "";
-  tile.dataset.state = "empty";
-  // Restore hint if it exists
-  if (tile.dataset.hintLetter) {
-    tile.textContent = tile.dataset.hintLetter;
-    tile.classList.add("hint-placeholder");
-  }
+    currentCol--;
+    const tile = rows[currentRow].children[currentCol];
+    tile.textContent = "";
+    tile.dataset.state = "empty";
+    // Restore hint if it exists
+    if (tile.dataset.hintLetter) {
+        tile.textContent = tile.dataset.hintLetter;
+        tile.classList.add("hint-placeholder");
+    }
 
-  saveState(); // Save after deletion
+    saveState(); // Save after deletion
 }
 function submitGuess() {
-  if (currentCol < WORD_LENGTH) {
-    shakeRow();
-    const msg = document.getElementById("message");
-    msg.textContent = "Not enough letters";
-    setTimeout(() => msg.textContent = "", 2000);
-    return;
-  }
-
-  let guess = "";
-  for (let tile of rows[currentRow].children) {
-    guess += tile.textContent.toLowerCase();
-  }
-
-  sendGuessToServer(guess);
-}
-document.addEventListener("keydown", (e) => {
-  handleInput(e.key);
-});
-document.querySelectorAll(".key").forEach(key => {
-  key.addEventListener("click", () => {
-    const value =
-      key.dataset.key === "enter" ? "Enter" :
-        key.dataset.key === "backspace" ? "Backspace" :
-          key.textContent;
-
-    handleInput(value);
-  });
-});
-function shakeRow() {
-  const row = rows[currentRow];
-  row.classList.add("invalid");
-
-  setTimeout(() => row.classList.remove("invalid"), 600);
-}
-function sendGuessToServer(word) {
-  fetch("/check-word", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ word: word })
-  })
-    .then(res => res.json())
-    .then(data => {
-      if (!data.valid) {
-        // If word is invalid, shake the row
+    if (currentCol < WORD_LENGTH) {
         shakeRow();
         const msg = document.getElementById("message");
-        msg.textContent = data.reason;
+        msg.textContent = "Not enough letters";
         setTimeout(() => msg.textContent = "", 2000);
-        console.log(data.reason); // optional: show reason in console or alertg
-      } else {
-        // Valid word → flip tiles with evaluation
-        document.getElementById("message").textContent = "";
-        applyResult(data.evaluation);
+        return;
+    }
 
-        // Flask sends a json-answer over HTTP, and JS converts it to an object that is saved in the variable (data)
-        // Took me a long time to understand this
-        if (data.win) {
-          gameOverFlag = true;
-          clearAllHintPlaceholders(); // Remove all remaining hint placeholders
-          // Add a slight delay to ensure DOM updates finish before confetti
-          setTimeout(() => {
-            launchConfetti();
-          }, 10);
+    let guess = "";
+    for (let tile of rows[currentRow].children) {
+        guess += tile.textContent.toLowerCase();
+    }
 
-          document.querySelector(".win-counter").innerText =
-            "Wins: " + data.wins;
-          gameOver(true);
-        }
-        else if (currentRow >= rows.length) {
-          gameOver(false)
+    sendGuessToServer(guess);
+}
+document.addEventListener("keydown", (e) => {
+    handleInput(e.key);
+});
+document.querySelectorAll(".key").forEach(key => {
+    key.addEventListener("click", () => {
+        const value =
+            key.dataset.key === "enter" ? "Enter" :
+                key.dataset.key === "backspace" ? "Backspace" :
+                    key.textContent;
 
-        }
-      }
+        handleInput(value);
     });
+});
+function shakeRow() {
+    const row = rows[currentRow];
+    row.classList.add("invalid");
+
+    setTimeout(() => row.classList.remove("invalid"), 600);
+}
+function sendGuessToServer(word) {
+    fetch("/check-word", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ word: word })
+    })
+        .then(res => res.json())
+        .then(data => {
+            if (!data.valid) {
+                // If word is invalid, shake the row
+                shakeRow();
+                const msg = document.getElementById("message");
+                msg.textContent = data.reason;
+                setTimeout(() => msg.textContent = "", 2000);
+                console.log(data.reason); // optional: show reason in console or alertg
+            } else {
+                // Valid word → flip tiles with evaluation
+                document.getElementById("message").textContent = "";
+                applyResult(data.evaluation);
+
+                // Flask sends a json-answer over HTTP, and JS converts it to an object that is saved in the variable (data)
+                // Took me a long time to understand this
+                if (data.win) {
+                    gameOverFlag = true;
+                    clearAllHintPlaceholders(); // Remove all remaining hint placeholders
+                    // Add a slight delay to ensure DOM updates finish before confetti
+                    setTimeout(() => {
+                        launchConfetti();
+                    }, 10);
+
+                    document.querySelector(".win-counter").innerText = 
+                        "Wins: " + data.wins;
+                    gameOver();
+                }
+                else if (currentRow >= rows.length) {
+                    gameOver()
+                }
+            }
+        });
 }
 function applyResult(result) {
-  const stateMap = ["absent", "present", "correct"];
-  const delay = 200; // The time to wait before starting the next tile's flip
-  //index 0 = "absent 
-  //index 1 = "present"
-  //index 2 = "correct"
-  result.forEach((state, i) => {
-    const tile = rows[currentRow].children[i];
-
-    // Use setTimeout to delay each tile based on its position (index i)
-    setTimeout(() => {
-      // Remove hint styling if it was there
-      tile.classList.remove("hint-placeholder");
-      delete tile.dataset.hintLetter;
-      const letter = tile.textContent.toUpperCase();
-
-      // Start the "flip-in" part of the animation
-      tile.dataset.animation = "flip-in";
-
-      // Halfway through the flip (250ms), change color and "flip-out"
-      setTimeout(() => {
-        tile.dataset.state = stateMap[state];
-        tile.dataset.animation = "flip-out";
-      }, 250);
-
-      // Update the keyboard key color
-      const key = document.querySelector(`.key[data-key="${letter}"]`);
-      if (key) {
-        const priority = { "absent": 0, "present": 1, "correct": 2 };
-        const current = key.dataset.state;
-        if (!current || priority[stateMap[state]] > priority[current]) {
-          key.dataset.state = stateMap[state];
-          key.classList.add("fade");
-        }
-      }
-    }, i * delay); // Tile 0 starts at 0ms, Tile 1 at 200ms...
-  });
     const stateMap = ["absent", "present", "correct"]; 
     const delay = 200; // The time to wait before starting the next tile's flip
     //index 0 = "absent 
@@ -383,12 +339,12 @@ function applyResult(result) {
         }, i * delay); // Tile 0 starts at 0ms, Tile 1 at 200ms...
     });
 
-  // Move to next row
-  if (!gameOverFlag) {
-    currentRow++;
-    currentCol = 0;
-  }
-  saveState();
+    // Move to next row
+    if (!gameOverFlag) {
+        currentRow++;
+        currentCol = 0;
+    }
+    saveState(); 
 }
 
 function launchConfetti() {
@@ -404,8 +360,8 @@ function launchConfetti() {
       angle: 60 + Math.random() * 20,                   //direction in degrees the confetti flies (around 60°).
       spread: 55 + Math.random() * 10,                  //how wide the confetti spreads (55–65°).
       origin: { x: Math.random(), y: Math.random() * 0.5 },//origin: where the confetti starts on the screen:
-      //x = horizontal (0 = left, 1 = right)
-      //y = vertical (0 = top, 1 = bottom)
+                                                            //x = horizontal (0 = left, 1 = right)
+                                                            //y = vertical (0 = top, 1 = bottom)
       colors: colors,
       scalar: 0.8 + Math.random() * 0.5                   //size of particles (random between 0.8–1.3).
     });
@@ -428,29 +384,29 @@ function launchConfetti() {
 let hintUsed = false;
 const hintIcon = document.getElementById("hintIcon");
 hintIcon.addEventListener("click", async () => {
-  if (hintUsed || gameOverFlag) return;
+   if (hintUsed || gameOverFlag) return;
 
-  /*rows = all 6 board rows.Convert NodeList → Array.
-   For each row:
-     Look at each tile
-     Read tile.dataset.state
-     If no state → use "empty" 
-   Example:You create a 2D array like:
-     [
-       ["correct", "present", "absent", "empty", "empty"],
-       ["empty", "empty", "empty", "empty", "empty"],
-       ...
-     ]
-   */
-  const rowsState = Array.from(rows).map(row =>
-    Array.from(row.children).map(tile => tile.dataset.state || "empty")
-  );
+   /*rows = all 6 board rows.Convert NodeList → Array.
+    For each row:
+      Look at each tile
+      Read tile.dataset.state
+      If no state → use "empty" 
+    Example:You create a 2D array like:
+      [
+        ["correct", "present", "absent", "empty", "empty"],
+        ["empty", "empty", "empty", "empty", "empty"],
+        ...
+      ]
+    */
+   const rowsState = Array.from(rows).map(row =>
+     Array.from(row.children).map(tile => tile.dataset.state || "empty")
+   );
 
   try {
     const res = await fetch("/get-hint", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ rows: rowsState })
+      headers: {"Content-Type":"application/json"},
+      body: JSON.stringify({rows: rowsState})
     });
     const data = await res.json();//Wait for backend response.Convert response into JavaScript object
     /*Example response:
@@ -462,10 +418,10 @@ hintIcon.addEventListener("click", async () => {
     if (!data.success) return showMessage(data.message);
 
     const col = data.col, letter = data.letter;
-    for (let r = 0; r < rows.length; r++) {
+    for (let r=0;r<rows.length;r++){
       const tile = rows[r].children[col];//For each row:Pick tile at hint column.Ex:If col = 2 → 3rd column of every row.
       if (!tile.textContent) {  //Only apply hint if tile is empty.This prevents overriding user-typed letters.
-        tile.textContent = letter;
+        tile.textContent=letter; 
         tile.classList.add("hint-placeholder");
         tile.dataset.hintLetter = letter; // Store hint letter in dataset.So if user deletes typed letter → we can restore hint.
       }
@@ -474,14 +430,14 @@ hintIcon.addEventListener("click", async () => {
     hintUsed = true;
     hintIcon.classList.add("used");
     showMessage("Hint Used!");
-  } catch (err) { console.error("Hint error:", err); }
+  } catch(err){console.error("Hint error:",err);}
 });
 
 // Helper to show temporary message 
-function showMessage(msg) {
-  const messageEl = document.getElementById("message");
+function showMessage(msg) { 
+  const messageEl = document.getElementById("message"); 
   messageEl.textContent = msg;
-  setTimeout(() => { messageEl.textContent = ""; }, 2000);
+  setTimeout(() => { messageEl.textContent = ""; }, 2000); 
 }
 function clearAllHintPlaceholders() {
   rows.forEach(row => {
