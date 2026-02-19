@@ -3,6 +3,7 @@ import os
 import json
 from typing import List
 from flask import Flask, redirect, url_for
+import requests
 
 
 LETTER_NOT_IN_WORD = 0 # Bokstaven finns inte alls i ordet // Letter is not inte the word at all
@@ -13,6 +14,15 @@ BASE_DIR = os.path.abspath(
 )
 wins = 0
 # Also i probably will not use global variables as the ones above in the future. It's just there as an illustration.
+
+def fetch_word_from_api() -> str:
+    response = requests.get("https://gist.githubusercontent.com/mrhead/f0ced2726394588e8d9863e0568b6473/raw/wordle.json")
+
+    data = response.json()
+
+    with open(os.path.join(BASE_DIR, "static", "assets", "words.json"), "w", encoding="utf-8") as f:
+        json.dump(data, f)
+    
 
 def generate_word(words: list[str]) -> str:
 
@@ -87,6 +97,10 @@ Checking out...
 
 def load_wordlist():
     path = os.path.join(BASE_DIR, "static", "assets", "words.json")
+
+    if not os.path.exists(path):
+        fetch_word_from_api()
+        
     with open(path, encoding="utf-8") as f:
         words = json.load(f)
 
