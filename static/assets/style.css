@@ -466,6 +466,29 @@ body {
   padding: 0 16px;
 }
 
+#continueBtn {
+  display: none;
+
+  width: 100%;
+  max-width: 320px;
+
+  padding: 16px;
+  font-size: 1rem;
+  font-weight: 600;
+
+  background-color: #6aaa64;
+  /* Wordle-grön */
+  color: white;
+
+  border: none;
+  border-radius: 10px;
+
+  cursor: pointer;
+  touch-action: manipulation;
+
+  transition: background-color 0.2s ease, transform 0.1s ease;
+}
+
 /* restart-button */
 #restartBtn {
   display: none;
@@ -502,107 +525,111 @@ body {
 
 /* Leaderboard section */
 #leaderboard {
-    margin-top: 50px; 
-    padding: 20px;
-    background-color: #ffffff;
-    border: 1px solid #d3d6da;
-    border-radius: 8px;
-    width: 100%;
-    max-width: 350px;
-    margin-left: auto;
-    margin-right: auto;
-    text-align: center;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.08); 
+  margin-top: 50px;
+  padding: 20px;
+  background-color: #ffffff;
+  border: 1px solid #d3d6da;
+  border-radius: 8px;
+  width: 100%;
+  max-width: 350px;
+  margin-left: auto;
+  margin-right: auto;
+  text-align: center;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
 }
 
 #leaderboard h4 {
-    color: #1a1a1b;
-    margin-bottom: 20px;
-    letter-spacing: 1px;
-    font-size: 1.2rem;
-    text-transform: uppercase;
-    border-bottom: 1px solid #f6f7f8;
-    padding-bottom: 10px;
+  color: #1a1a1b;
+  margin-bottom: 20px;
+  letter-spacing: 1px;
+  font-size: 1.2rem;
+  text-transform: uppercase;
+  border-bottom: 1px solid #f6f7f8;
+  padding-bottom: 10px;
 }
 
 #leaderboardList {
-    list-style: none;
-    padding: 0;
-    margin: 0;
+  list-style: none;
+  padding: 0;
+  margin: 0;
 }
 
 #leaderboardList li {
-    display: flex;
-    justify-content: space-between;
-    padding: 12px 15px;
-    margin-bottom: 8px;
-    background-color: #f6f7f8;
-    color: #1a1a1b;
-    border-radius: 4px;
-    font-weight: 600;
-    font-size: 0.95rem;
-    border: 1px solid #e3e3e3;
+  display: flex;
+  justify-content: space-between;
+  padding: 12px 15px;
+  margin-bottom: 8px;
+  background-color: #f6f7f8;
+  color: #1a1a1b;
+  border-radius: 4px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  border: 1px solid #e3e3e3;
 }
 
 /* --- Top 3 Highlights --- */
 #leaderboardList li:nth-child(1) {
-    border-left: 5px solid #d4af37; /* Gold */
-    background-color: #fffdf2;
+  border-left: 5px solid #d4af37;
+  /* Gold */
+  background-color: #fffdf2;
 }
 
 #leaderboardList li:nth-child(2) {
-    border-left: 5px solid #9ea3a9; /* Silver */
+  border-left: 5px solid #9ea3a9;
+  /* Silver */
 }
 
 #leaderboardList li:nth-child(3) {
-    border-left: 5px solid #cd7f32; /* Bronze */
+  border-left: 5px solid #cd7f32;
+  /* Bronze */
 }
 
 /* --- Save Score Section --- */
 #leaderboardSave {
-    margin-top: 30px; 
-    margin-bottom: 30px;
-    padding-bottom: 20px;
-    border-bottom: 2px solid #f6f7f8;
+  margin-top: 30px;
+  margin-bottom: 30px;
+  padding-bottom: 20px;
+  border-bottom: 2px solid #f6f7f8;
 }
 
 #playerName {
-    padding: 10px;
-    border: 2px solid #d3d6da;
-    border-radius: 4px;
-    background-color: #ffffff;
-    color: #1a1a1b;
-    width: 65%;
-    outline: none;
-    font-size: 1rem;
+  padding: 10px;
+  border: 2px solid #d3d6da;
+  border-radius: 4px;
+  background-color: #ffffff;
+  color: #1a1a1b;
+  width: 65%;
+  outline: none;
+  font-size: 1rem;
 }
 
 #playerName:focus {
-    border-color: #6aaa64;
+  border-color: #6aaa64;
 }
 
 #saveBtn {
-    padding: 10px 20px;
-    background-color: #6aaa64;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    font-weight: bold;
-    font-size: 0.9rem;
-    margin-left: 5px;
+  padding: 10px 20px;
+  background-color: #6aaa64;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 0.9rem;
+  margin-left: 5px;
 }
 
 #saveBtn:hover {
-    background-color: #538d4e;
+  background-color: #538d4e;
 }
 
 .win-counter {
-    color: #787c7e;
-    font-size: 0.85rem;
-    margin-top: 10px;
-    font-weight: bold;
+  color: #787c7e;
+  font-size: 0.85rem;
+  margin-top: 10px;
+  font-weight: bold;
 }
+
 .topBar {
   display: flex;
   align-items: center;
@@ -623,9 +650,11 @@ body {
 .hintContainer {
   margin-left: auto;
 }
+
 .tile.hint-placeholder {
-  color: rgba(0,0,0,0.3);
-  background-color: rgba(24, 181, 10, 0.18); /* light green*/
+  color: rgba(0, 0, 0, 0.3);
+  background-color: rgba(24, 181, 10, 0.18);
+  /* light green*/
   font-style: italic;
   transition: opacity 0.5s ease;
   opacity: 0;
@@ -633,7 +662,9 @@ body {
 }
 
 @keyframes fadeIn {
-  to { opacity: 1; }
+  to {
+    opacity: 1;
+  }
 }
 
 #hintIcon {
