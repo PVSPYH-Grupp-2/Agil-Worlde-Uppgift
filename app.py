@@ -102,6 +102,8 @@ def check_word():
         wins += 1
         session["secret_word"] = generate_word(WORDLIST)   # nytt ord efter vinst
         session["game_hint_used"] = False                  # reset hint för nya ordet
+        session.pop("hint_col", None) # reset hint column for new game
+        session.pop("hint_letter", None)  # reset hint letter for new game
 
     return jsonify({
         "valid": True,
@@ -117,8 +119,14 @@ def get_hint():
         secret = generate_word(WORDLIST)
         session["secret_word"] = secret
         session["game_hint_used"] = False
+        session.pop("hint_col", None)  # reset hint column for new game
+        session.pop("hint_letter", None)  # reset hint letter for new game
 
     if session.get("game_hint_used", False):
+        col = session.get("hint_col")
+        letter = session.get("hint_letter")
+        if col is not None and letter is not None:
+            return jsonify({"success": True, "col": col, "letter": letter})
         return jsonify({"success": False, "message": "Hint already used"})
 
     data = request.get_json()
@@ -139,6 +147,9 @@ def get_hint():
     letter = secret[col].upper()
 
     session["game_hint_used"] = True
+    session["hint_col"] = col
+    session["hint_letter"] = letter 
+
     return jsonify({"success": True, "col": col, "letter": letter})
 
 
