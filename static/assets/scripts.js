@@ -294,44 +294,49 @@ function sendGuessToServer(word) {
         });
 }
 function applyResult(result) {
-    const stateMap = ["absent", "present", "correct"]; // map numbers to CSS states
-    // index 0 → absent
-    // index 1 → present
-    // index 2 → correct
+    const stateMap = ["absent", "present", "correct"]; 
+    const delay = 200; // The time to wait before starting the next tile's flip
+    //index 0 = "absent 
+    //index 1 = "present"
+    //index 2 = "correct"
     result.forEach((state, i) => {
         const tile = rows[currentRow].children[i];
-        // Remove hint once flipped
-        tile.classList.remove("hint-placeholder");
-        delete tile.dataset.hintLetter;
-        const letter = tile.textContent.toUpperCase();
-
-        // Animate tile
-        tile.dataset.animation = "flip-in";
+        
+        // Use setTimeout to delay each tile based on its position (index i)
         setTimeout(() => {
-            tile.dataset.state =  stateMap[state]; // use mapped string
-            tile.dataset.animation = "flip-out";
-        },250);
+            // Remove hint styling if it was there
+            tile.classList.remove("hint-placeholder");
+            delete tile.dataset.hintLetter;
+            const letter = tile.textContent.toUpperCase();
 
-        // Update keyboard key
-        const key = document.querySelector(`.key[data-key="${letter}"]`);
-        if (key) {
-            // Only upgrade state if it's "worse" than current
-            // correct > present > absent
-            const priority = { "absent": 0, "present": 1, "correct": 2 };
-            const current = key.dataset.state;
-            if (!current || priority[stateMap[state]] > priority[current]) {
-                key.dataset.state =stateMap[state];
-                key.classList.add("fade"); // optional smooth transition
+            // Start the "flip-in" part of the animation
+            tile.dataset.animation = "flip-in";
+
+            // Halfway through the flip (250ms), change color and "flip-out"
+            setTimeout(() => {
+                tile.dataset.state = stateMap[state]; 
+                tile.dataset.animation = "flip-out";
+            }, 250);
+
+            // Update the keyboard key color
+            const key = document.querySelector(`.key[data-key="${letter}"]`);
+            if (key) {
+                const priority = { "absent": 0, "present": 1, "correct": 2 };
+                const current = key.dataset.state;
+                if (!current || priority[stateMap[state]] > priority[current]) {
+                    key.dataset.state = stateMap[state];
+                    key.classList.add("fade"); 
+                }
             }
-        }
+        }, i * delay); // Tile 0 starts at 0ms, Tile 1 at 200ms...
     });
 
-    // Move to next row only if game not over
+    // Move to next row
     if (!gameOverFlag) {
         currentRow++;
         currentCol = 0;
     }
-    saveState(); // Save state after moving to next row
+    saveState(); 
 }
 
 function launchConfetti() {
