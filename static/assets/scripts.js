@@ -1,25 +1,4 @@
 // script.js
-// Wait for the content to load, then run the check automatically
-// document.addEventListener("DOMContentLoaded", function() {
-
-//     let userGuessElement = document.getElementById("user-guess");
-//     let secretWordElement = document.getElementById("secret-word");
-
-//     // Read the values from the HTML data attributes we added
-//     let savedWord = userGuessElement.getAttribute("data-guess");
-//     let secretWord = secretWordElement.getAttribute("data-secret");
-
-//     // Check if a guess exists
-//     if (savedWord && savedWord !== "") {
-//         if (savedWord === secretWord) {
-//             userGuessElement.style.color = "green";
-//             secretWordElement.style.color = "green";
-//         } else {
-//             userGuessElement.style.color = "red";
-//         }
-//     }
-// });
-
 // Restart button and functionality
 const restartBtn = document.getElementById("restartBtn");
 const CURRENT_SECRET = document.body.dataset.secret;
@@ -28,6 +7,10 @@ function gameOver() {
     document.getElementById("restartBtn").style.display = "block";
     document.getElementById("leaderboard").style.display = "block";
     document.getElementById("leaderboardSave").style.display = "block";
+    
+    // Refresh the scores from the server when the game ends
+    fetchLeaderboard(); 
+    
     saveState(); // Save final state when game is over
 }
 function restartGame() {
@@ -41,14 +24,49 @@ const saveBtn = document.getElementById("saveBtn");
 const nameInput = document.getElementById("playerName");
 const entry = document.createElement("li");
 
-saveBtn.addEventListener("click", function () {
+// Updated to use async so we can wait for the server to save
+saveBtn.addEventListener("click", async function () {
     const playerName = nameInput.value.trim();
     if (playerName !== "") {
-        entry.textContent = playerName;
-        document.getElementById("leaderboardList").appendChild(entry);
-        nameInput.value = ""; 
+        // --- NEW: Send the name to Python server ---
+        try {
+            const response = await fetch("/save-score", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ name: playerName })
+            });
+            const result = await response.json();
+
+            if (result.success) {
+                // Refresh the leaderboard from the JSON file
+                fetchLeaderboard(); 
+                nameInput.value = ""; 
+                document.getElementById("leaderboardSave").style.display = "none";
+            }
+        } catch (err) {
+            console.error("Save error:", err);
+        }
+        // --- End of server send ---
     }
 }); 
+
+// --- NEW: Helper to refresh the list from the server's JSON file ---
+async function fetchLeaderboard() {
+    try {
+        const res = await fetch("/leaderboard");
+        const data = await res.json();
+        const list = document.getElementById("leaderboardList");
+        
+        list.innerHTML = ""; // Clear list
+        data.leaderboard.forEach(item => {
+            const li = document.createElement("li");
+            li.textContent = `${item.name}: ${item.wins} Wins`;
+            list.appendChild(li);
+        });
+    } catch (err) {
+        console.error("Fetch error:", err);
+    }
+}
 
 
 const rows = document.querySelectorAll(".boardRow");
@@ -310,26 +328,6 @@ function applyResult(result) {
             }
         }
     });
-    // Just a win_check, we need it in order for the restartBtn to show up here
-    // Since we chose to do almost everything in javascript, maybe this is where the win_validation should be
-    // NVM, added the win_validation functionality from the backend
-    // let win = true;
-
-    // for (let i = 0; i < result.length; i++) {
-    //     if (result[i] !== "correct") {
-    //         win = false;
-    //     }
-    // }
-
-    // if (win) {
-    //     gameOver();
-    //     return;
-    // }
-
-    // // if all the rows are already used, then game over
-    // if (currentRow === rows.length - 1) {
-    //     gameOver();
-    // }
 
     // Move to next row only if game not over
     if (!gameOverFlag) {
@@ -352,8 +350,8 @@ function launchConfetti() {
       angle: 60 + Math.random() * 20,                   //direction in degrees the confetti flies (around 60°).
       spread: 55 + Math.random() * 10,                  //how wide the confetti spreads (55–65°).
       origin: { x: Math.random(), y: Math.random() * 0.5 },//origin: where the confetti starts on the screen:
-                                                          //x = horizontal (0 = left, 1 = right)
-                                                          //y = vertical (0 = top, 1 = bottom)
+                                                            //x = horizontal (0 = left, 1 = right)
+                                                            //y = vertical (0 = top, 1 = bottom)
       colors: colors,
       scalar: 0.8 + Math.random() * 0.5                   //size of particles (random between 0.8–1.3).
     });
@@ -446,4 +444,6 @@ function clearAllHintPlaceholders() {
 document.addEventListener("DOMContentLoaded", () => {
   const saved = loadState();
   if (saved) restoreState(saved);
+  // Fetch leaderboard on startup
+  fetchLeaderboard();
 });

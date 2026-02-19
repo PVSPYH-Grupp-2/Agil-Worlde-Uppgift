@@ -1,20 +1,52 @@
+# app.py
 from flask import Flask, redirect, render_template, request, url_for, jsonify, session
-from backend.wordle_logic import win_validation, load_wordlist, generate_word,letter_check
+from backend.wordle_logic import win_validation, load_wordlist, generate_word, letter_check
 import random
+import json
+import os
 
 app = Flask(__name__)
 app.secret_key = "dev_secret_key"  # Needed for session management
 
 wins = 0
+LEADERBOARD_FILE = "leaderboard.json"
 
 WORDLIST = load_wordlist()["words"]
 SECRET_WORD = generate_word(WORDLIST)
 WORD_LENGTH = 5
 game_hint_used = False
 
+
+def get_score(player_entry):
+    return player_entry["wins"]
+
+def save_to_json(name, score):
+    data = []
+    #Load existing data if file exists
+    if os.path.exists(LEADERBOARD_FILE):
+        try:
+            with open(LEADERBOARD_FILE, "r") as f:
+                data = json.load(f)
+        except:
+            data = []
+    
+    # Add the new player and their score to the list
+    new_entry = {"name": name, "wins": score}
+    data.append(new_entry)
+    
+    # Sort the list (highest wins first)
+    data.sort(key=get_score, reverse=True) # rewrite this one
+    
+    # Keep only the top 10 scores
+    top_ten = data[:10] 
+    
+    # Save back to the file
+    with open(LEADERBOARD_FILE, "w") as f:
+        json.dump(top_ten, f)
+
 @app.route("/", methods=["GET", "POST"])
 def home():
-    global SECRET_WORD,game_hint_used
+    global SECRET_WORD, game_hint_used
 
     if "secret_word" not in session:
         session["secret_word"] = generate_word(WORDLIST)
@@ -30,8 +62,21 @@ def home():
 
 @app.route("/leaderboard", methods=["GET"])
 def leaderboard():
-    
-    return jsonify({"leaderboard": []})
+    data = []
+    if os.path.exists(LEADERBOARD_FILE):
+        with open(LEADERBOARD_FILE, "r") as f:
+            try:
+                data = json.load(f)
+            except:
+                data = []
+    return jsonify({"leaderboard": data})
+
+@app.route("/save-score", methods=["POST"])
+def save_score():
+    data = request.get_json()
+    name = data.get("name", "Anonymous")
+    save_to_json(name, wins)
+    return jsonify({"success": True})
 
 @app.route("/check-word", methods=["POST"])
 def check_word():
@@ -99,5 +144,3 @@ def get_hint():
 
 if __name__ == "__main__":
     app.run(debug=True)
-
-
