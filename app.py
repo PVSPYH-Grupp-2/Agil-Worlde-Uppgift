@@ -1,12 +1,14 @@
 # app.py
 from flask import Flask, redirect, render_template, request, url_for, jsonify, session
 from backend.wordle_logic import win_validation, load_wordlist, generate_word, letter_check
+from datetime import timedelta
 import random
 import json
 import os
 
 app = Flask(__name__)
 app.secret_key = "dev_secret_key"  # Needed for session management
+app.config["PERMANENT_SESSION_LIFETIME"] = timedelta(days=30)  # Session lasts for 30 days
 
 wins = 0
 LEADERBOARD_FILE = "leaderboard.json"
@@ -46,6 +48,7 @@ def save_to_json(name, score):
 
 @app.route("/", methods=["GET", "POST"])
 def home():
+    session.permanent = True  # Make the session permanent so it lasts for the defined lifetime
     global SECRET_WORD, game_hint_used
 
     if "secret_word" not in session:
