@@ -2,6 +2,8 @@
 // Restart button and functionality
 const restartBtn = document.getElementById("restartBtn");
 const CURRENT_SECRET = document.body.dataset.secret;
+let totalPoints = parseInt(localStorage.getItem("totalPoints")) || 0;
+
 
 function gameOver() {
     document.getElementById("restartBtn").style.display = "block";
@@ -73,11 +75,6 @@ let currentCol = 0;
 const WORD_LENGTH = 5;
 let gameOverFlag = false; // Flag to stop input after win
 let maxPoints = 30;
-
-
-function updatePoints(currentRow) {
-  return maxPoints - (currentRow * 5)
-}
 
 
 // LocalStorage (persistent state)
@@ -288,14 +285,22 @@ function sendGuessToServer(word) {
                     setTimeout(() => {
                         launchConfetti();
                     }, 10);
-                    updatePoints(currentRow)
+                    
+
+                    const winRow = currentRow -1;
+                    const earnedPoints = maxPoints -(winRow * 5);
+
+                    totalPoints += earnedPoints;
+                    
+                    localStorage.setItem("totalPoints", totalPoints);
+
 
                     document.querySelector(".win-counter").innerText = 
                         "Wins: " + data.wins;
                       
-                      
+
                     document.querySelector(".point-counter").innerText = 
-                        "Points: " + data.points;
+                        "Points: " + totalPoints;
 
                       
                     gameOver();
