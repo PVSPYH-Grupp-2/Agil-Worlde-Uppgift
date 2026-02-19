@@ -72,6 +72,12 @@ let currentRow = 0;
 let currentCol = 0;
 const WORD_LENGTH = 5;
 let gameOverFlag = false; // Flag to stop input after win
+let maxPoints = 30;
+
+
+function updatePoints(currentRow) {
+  return maxPoints - (currentRow * 5)
+}
 
 
 // LocalStorage (persistent state)
@@ -282,9 +288,16 @@ function sendGuessToServer(word) {
                     setTimeout(() => {
                         launchConfetti();
                     }, 10);
+                    updatePoints(currentRow)
 
                     document.querySelector(".win-counter").innerText = 
                         "Wins: " + data.wins;
+                      
+                      
+                    document.querySelector(".point-counter").innerText = 
+                        "Points: " + data.points;
+
+                      
                     gameOver();
                 }
                 else if (currentRow >= rows.length) {

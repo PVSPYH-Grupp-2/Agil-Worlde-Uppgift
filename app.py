@@ -1,5 +1,4 @@
-# app.py
-from flask import Flask, redirect, render_template, request, url_for, jsonify, session
+from flask import Flask, redirect, render_template, request, jsonify, session
 from backend.wordle_logic import win_validation, load_wordlist, generate_word, letter_check
 import random
 import json
@@ -9,6 +8,7 @@ app = Flask(__name__)
 app.secret_key = "dev_secret_key"  # Needed for session management
 
 wins = 0
+points = 0
 LEADERBOARD_FILE = "leaderboard.json"
 
 WORDLIST = load_wordlist()["words"]
@@ -80,7 +80,7 @@ def save_score():
 
 @app.route("/check-word", methods=["POST"])
 def check_word():
-    global wins
+    global wins, points
 
     # hämta ord från session eller generera nytt om det inte finns
     secret = session.get("secret_word")
@@ -91,6 +91,9 @@ def check_word():
 
     data = request.get_json()
     word = data.get("word", "").lower()
+    
+
+
 
     if word not in WORDLIST:
         return jsonify({"valid": False, "reason": "Not in wordlist"})
