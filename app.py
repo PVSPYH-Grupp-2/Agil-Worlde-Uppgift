@@ -13,7 +13,7 @@ app.config["PERMANENT_SESSION_LIFETIME"] = timedelta(days=30)  # Session lasts f
 wins = 0
 LEADERBOARD_FILE = "leaderboard.json"
 
-WORDLIST = load_wordlist()["words"]
+WORDLIST = load_wordlist()
 SECRET_WORD = generate_word(WORDLIST)
 WORD_LENGTH = 5
 game_hint_used = False
