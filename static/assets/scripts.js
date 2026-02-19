@@ -316,6 +316,14 @@ function applyResult(result) {
             setTimeout(() => {
                 tile.dataset.state = stateMap[state]; 
                 tile.dataset.animation = "flip-out";
+
+                if (i === result.length - 1) {
+                // vänta lite extra så animationen hinner färdigt
+                  setTimeout(() => {
+                      saveState();
+                  }, 50);
+              }
+
             }, 250);
 
             // Update the keyboard key color
