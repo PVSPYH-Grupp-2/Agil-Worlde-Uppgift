@@ -338,6 +338,50 @@ function applyResult(result) {
       }
     }, i * delay); // Tile 0 starts at 0ms, Tile 1 at 200ms...
   });
+    const stateMap = ["absent", "present", "correct"]; 
+    const delay = 200; // The time to wait before starting the next tile's flip
+    //index 0 = "absent 
+    //index 1 = "present"
+    //index 2 = "correct"
+    result.forEach((state, i) => {
+        const tile = rows[currentRow].children[i];
+        
+        // Use setTimeout to delay each tile based on its position (index i)
+        setTimeout(() => {
+            // Remove hint styling if it was there
+            tile.classList.remove("hint-placeholder");
+            delete tile.dataset.hintLetter;
+            const letter = tile.textContent.toUpperCase();
+
+            // Start the "flip-in" part of the animation
+            tile.dataset.animation = "flip-in";
+
+            // Halfway through the flip (250ms), change color and "flip-out"
+            setTimeout(() => {
+                tile.dataset.state = stateMap[state]; 
+                tile.dataset.animation = "flip-out";
+
+                if (i === result.length - 1) {
+                // vänta lite extra så animationen hinner färdigt
+                  setTimeout(() => {
+                      saveState();
+                  }, 50);
+              }
+
+            }, 250);
+
+            // Update the keyboard key color
+            const key = document.querySelector(`.key[data-key="${letter}"]`);
+            if (key) {
+                const priority = { "absent": 0, "present": 1, "correct": 2 };
+                const current = key.dataset.state;
+                if (!current || priority[stateMap[state]] > priority[current]) {
+                    key.dataset.state = stateMap[state];
+                    key.classList.add("fade"); 
+                }
+            }
+        }, i * delay); // Tile 0 starts at 0ms, Tile 1 at 200ms...
+    });
 
   // Move to next row
   if (!gameOverFlag) {
