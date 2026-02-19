@@ -28,7 +28,6 @@ const entry = document.createElement("li");
 saveBtn.addEventListener("click", async function () {
     const playerName = nameInput.value.trim();
     if (playerName !== "") {
-        // --- NEW: Send the name to Python server ---
         try {
             const response = await fetch("/save-score", {
                 method: "POST",
@@ -46,11 +45,9 @@ saveBtn.addEventListener("click", async function () {
         } catch (err) {
             console.error("Save error:", err);
         }
-        // --- End of server send ---
     }
 }); 
 
-// --- NEW: Helper to refresh the list from the server's JSON file ---
 async function fetchLeaderboard() {
     try {
         const res = await fetch("/leaderboard");

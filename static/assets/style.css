@@ -500,30 +500,85 @@ body {
   transform: scale(0.96);
 }
 
-/* Leaderboard styling */
-/* Leaderboard Save Section (Input and Save Button) */
-#leaderboardSave {
-    margin-top: 20px;
+/* Leaderboard section */
+#leaderboard {
+    margin-top: 50px; 
+    padding: 20px;
+    background-color: #ffffff;
+    border: 1px solid #d3d6da;
+    border-radius: 8px;
+    width: 100%;
+    max-width: 350px;
+    margin-left: auto;
+    margin-right: auto;
+    text-align: center;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08); 
+}
+
+#leaderboard h4 {
+    color: #1a1a1b;
+    margin-bottom: 20px;
+    letter-spacing: 1px;
+    font-size: 1.2rem;
+    text-transform: uppercase;
+    border-bottom: 1px solid #f6f7f8;
+    padding-bottom: 10px;
+}
+
+#leaderboardList {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+#leaderboardList li {
     display: flex;
-    justify-content: center;
-    gap: 10px;
-    animation: fadeIn 0.5s ease-in;
+    justify-content: space-between;
+    padding: 12px 15px;
+    margin-bottom: 8px;
+    background-color: #f6f7f8;
+    color: #1a1a1b;
+    border-radius: 4px;
+    font-weight: 600;
+    font-size: 0.95rem;
+    border: 1px solid #e3e3e3;
+}
+
+/* --- Top 3 Highlights --- */
+#leaderboardList li:nth-child(1) {
+    border-left: 5px solid #d4af37; /* Gold */
+    background-color: #fffdf2;
+}
+
+#leaderboardList li:nth-child(2) {
+    border-left: 5px solid #9ea3a9; /* Silver */
+}
+
+#leaderboardList li:nth-child(3) {
+    border-left: 5px solid #cd7f32; /* Bronze */
+}
+
+/* --- Save Score Section --- */
+#leaderboardSave {
+    margin-top: 30px; 
+    margin-bottom: 30px;
+    padding-bottom: 20px;
+    border-bottom: 2px solid #f6f7f8;
 }
 
 #playerName {
-    padding: 10px 15px;
+    padding: 10px;
     border: 2px solid #d3d6da;
     border-radius: 4px;
-    font-size: 1rem;
-    font-weight: bold;
+    background-color: #ffffff;
+    color: #1a1a1b;
+    width: 65%;
     outline: none;
-    text-transform: uppercase;
-    width: 200px;
-    transition: border-color 0.3s;
+    font-size: 1rem;
 }
 
 #playerName:focus {
-    border-color: #6aaa64; /* Wordle Green */
+    border-color: #6aaa64;
 }
 
 #saveBtn {
@@ -532,55 +587,22 @@ body {
     color: white;
     border: none;
     border-radius: 4px;
-    font-weight: bold;
     cursor: pointer;
-    text-transform: uppercase;
-    transition: background-color 0.2s;
+    font-weight: bold;
+    font-size: 0.9rem;
+    margin-left: 5px;
 }
 
 #saveBtn:hover {
     background-color: #538d4e;
 }
 
-/* Leaderboard Display Section */
-
-#leaderboardSave {
-    display: flex;
-    justify-content: center;
-    margin-top: 20px;
-}
-
-#leaderboard {
-  margin-top: 30px;
-  padding: 20px;
-  background-color: #f5f5f5;
-  border-radius: 8px;
-  max-width: 100%;
-}
-
-#leaderboard h4 {
-  margin-bottom: 15px;
-  font-size: 1.5rem;
-  color: #333;
-}
-
-#leaderboard li {
-  padding: 12px 0;
-  border-bottom: 1px solid #d3d6da;
-  font-size: 1rem;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  font-family: 'Inter', Arial, sans-serif;
-}
-
 .win-counter {
-  display: inline-block;
-  font-family: 'Inter', Arial, sans-serif;
-  margin-left: 50px;
-  font-size: 120%;
+    color: #787c7e;
+    font-size: 0.85rem;
+    margin-top: 10px;
+    font-weight: bold;
 }
-
 .topBar {
   display: flex;
   align-items: center;
