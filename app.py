@@ -1,3 +1,4 @@
+# app.py
 from flask import Flask, redirect, render_template, request, jsonify, session
 from backend.wordle_logic import win_validation, load_wordlist, generate_word, letter_check
 from datetime import timedelta
@@ -20,9 +21,9 @@ game_hint_used = False
 
 
 def get_score(player_entry):
-    return player_entry["wins"]
+    return (player_entry.get("points", 0), player_entry.get("wins", 0))
 
-def save_to_json(name, score):
+def save_to_json(name, win_count, point_count):
     data = []
     #Load existing data if file exists
     if os.path.exists(LEADERBOARD_FILE):
@@ -33,7 +34,7 @@ def save_to_json(name, score):
             data = []
     
     # Add the new player and their score to the list
-    new_entry = {"name": name, "wins": score}
+    new_entry = {"name": name, "wins": win_count, "points": point_count}
     data.append(new_entry)
     
     # Sort the list (highest wins first)
@@ -77,8 +78,12 @@ def leaderboard():
 @app.route("/save-score", methods=["POST"])
 def save_score():
     data = request.get_json()
+    # Pull name, wins, and points from the JS fetch request
     name = data.get("name", "Anonymous")
-    save_to_json(name, wins)
+    current_wins = data.get("wins", 0)
+    current_points = data.get("points", 0)
+    
+    save_to_json(name, current_wins, current_points)
     return jsonify({"success": True})
 
 @app.route("/check-word", methods=["POST"])
