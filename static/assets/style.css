@@ -611,12 +611,82 @@ body {
     font-weight: bold;
 }
 
+/* top bar section */ 
 .topBar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  position: relative;
-  margin: 10px 0;
+    display: flex !important;
+    justify-content: space-between; /* Pushes left block and right button apart */
+    align-items: flex-start;
+    width: 100%;
+    margin-bottom: 20px;
+    position: relative; /* Keeps the error message centered relative to topBar */
+}
+
+/* Container for left items */
+.leftControls {
+    display: flex;
+    flex-direction: column;
+    gap: 6px; /* Space between the top row and the timer */
+}
+
+/* Score, Wins, and Icons row */
+.topRowLeft {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-weight: 700;
+    font-size: 1.1rem;
+    color: #000;
+}
+
+/* Timer: Increased size by ~25% */
+#timerDisplay {
+    font-weight: 700;
+    font-size: 1.2rem; 
+    color: #000;
+}
+
+/* Override original hint container to fit the new flex row */
+.hintContainer {
+    margin-left: 0 !important;
+}
+
+#hintIcon, #settingsIcon {
+    margin: 0 !important;
+    font-size: 1.8rem;
+    cursor: pointer;
+    color: #000;
+    transition: transform 0.2s ease;
+}
+
+/* Make hint bulb stay yellow like your original design */
+#hintIcon {
+    color: #fbbc04; 
+}
+
+#hintIcon:hover, #settingsIcon:hover {
+    transform: scale(1.1);
+}
+
+/* Quit Button stays on the right */
+#quitBtn {
+    background-color: #d3d6da;
+    border: none;
+    border-radius: 6px;
+    padding: 8px 16px;
+    font-weight: bold;
+    font-size: 1rem;
+    cursor: pointer;
+    font-family: 'Inter', Arial, sans-serif;
+    transition: background-color 0.1s ease;
+    margin-top: 2px; /* Aligns slightly better with the top row text */
+}
+
+#quitBtn:hover {
+    background-color: #c0c3c7;
+}
+
+#quitBtn:active {
+    transform: scale(0.96);
 }
 
 /* error message on board */
