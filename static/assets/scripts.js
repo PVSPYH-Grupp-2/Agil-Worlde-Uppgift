@@ -34,7 +34,11 @@ saveBtn.addEventListener("click", async function () {
             const response = await fetch("/save-score", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ name: playerName })
+                body: JSON.stringify({
+                  name: playerName,
+                  wins: parseInt(document.querySelector(".win-counter").innerText.replace("Wins: ", "")),
+                  points: totalPoints
+                })
             });
             const result = await response.json();
 
@@ -59,7 +63,7 @@ async function fetchLeaderboard() {
         list.innerHTML = ""; // Clear list
         data.leaderboard.forEach(item => {
             const li = document.createElement("li");
-            li.textContent = `${item.name}: ${item.wins} Wins`;
+            li.textContent = `${item.name}: ${item.points || 0} Points (${item.wins} Wins)`;
             list.appendChild(li);
         });
     } catch (err) {
