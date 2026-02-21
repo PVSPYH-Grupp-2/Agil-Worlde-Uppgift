@@ -17,12 +17,24 @@
 
 <body data-secret="{{ secret }}">
     <div class="gameContainer">
-        <div class="topBar">
+   <div class="topBar">
             <div id="message" class="errorMessage"></div>
-            <!-- Hint Icon -->
-            <div class="hintContainer">
-            <i id="hintIcon" class="bx bx-light-bulb-alt" title="Get a hint 💡"></i>
+            
+            <div class="leftControls">
+                <div class="topRowLeft">
+                    <div id="scoreDisplay">SCORE: 0</div>
+                    <div id="winsDisplay">WINS: {{wins}}</div>
+                    <i class="bx bx-cog" id="settingsIcon" title="Settings ⚙️"></i>
+                    
+                    <div class="hintContainer">
+                        <i id="hintIcon" class="bx bx-light-bulb-alt" title="Get a hint 💡"></i>
+                    </div>
+                </div>
+                
+                <div id="timerDisplay">TIMER: 00:00</div>
             </div>
+
+            <button id="quitBtn">QUIT</button>
         </div>
         <!-- BOARD -->
         <div class="boardContainer">
