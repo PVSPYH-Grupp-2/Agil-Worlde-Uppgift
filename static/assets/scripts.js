@@ -310,7 +310,14 @@ function sendGuessToServer(word) {
                     gameOver();
                 }
                 else if (currentRow >= rows.length) {
-                    gameOver()
+                  totalPoints = 0;
+                  localStorage.setItem("totalPoints", totalPoints);
+
+                  document.querySelector(".point-counter").innerText = 
+                    "Points: " + totalPoints;
+
+                  
+                  gameOver()
                 }
             }
         });
