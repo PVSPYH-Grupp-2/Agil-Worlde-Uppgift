@@ -18,7 +18,7 @@ let totalPoints = parseInt(localStorage.getItem("totalPoints")) || 0;
 
 
 let timeLeft = 120;
-let timerInterval = null;
+let timerInterval = null; 
 
 function gameOver() {
     document.getElementById("restartBtn").style.display = "block";
@@ -126,7 +126,7 @@ function saveState() {
     keyboard,
     message: document.getElementById("message")?.textContent || "",
     hintIconUsed: hintIcon?.classList.contains("used") || false,
-    timeLeft // <-- ADDED: Save current time to prevent refresh-cheating
+    timeLeft
   };
 
   localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
@@ -313,6 +313,13 @@ function sendGuessToServer(word) {
 
                     const winRow = currentRow -1;
                     const earnedPoints = maxPoints -(winRow * 5);
+
+                    let timeBonus = 30 - (winRow * 5);
+                    if (timeBonus < 5) timeBonus = 5; // Minimum 5s reward
+                    
+                    timeLeft += timeBonus;
+                    showMessage(`+${timeBonus}s Time Reward!`); // notification message popup
+                    updateTimerDisplay();
 
                     totalPoints += earnedPoints;
                     
@@ -564,5 +571,4 @@ document.addEventListener("DOMContentLoaded", () => {
   } else {
       updateTimerDisplay(); // If the game was already over, just show the final stopped time
   }
-  // ---------------------------------------------
 });
