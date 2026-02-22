@@ -1,4 +1,17 @@
 // script.js
+
+// Settings / Dark Mode Toggle
+const settingsIcon = document.getElementById("settingsIcon");
+
+settingsIcon.addEventListener("click", () => {
+    // Toggle the dark-mode class on the body
+    document.body.classList.toggle("dark-mode");
+    
+    // Save the preference to localStorage
+    const isDark = document.body.classList.contains("dark-mode");
+    localStorage.setItem("darkMode", isDark);
+});
+
 // Restart button and functionality
 const restartBtn = document.getElementById("restartBtn");
 const CURRENT_SECRET = document.body.dataset.secret;
@@ -483,6 +496,12 @@ function clearAllHintPlaceholders() {
 document.addEventListener("DOMContentLoaded", () => {
   const saved = loadState();
   if (saved) restoreState(saved);
+  
+  // Apply saved Dark Mode preference
+  if (localStorage.getItem("darkMode") === "true") {
+      document.body.classList.add("dark-mode");
+  }
+
   // Fetch leaderboard on startup
   fetchLeaderboard();
 });

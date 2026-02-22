@@ -726,3 +726,32 @@ body {
   opacity: 0.5;
   pointer-events: none;
 }
+
+/* Dark Mode state */
+body.dark-mode {
+    background-color: #121213; /* Classic Wordle dark gray/black */
+    color: white;
+
+}
+
+
+body.dark-mode .gameContainer, 
+body.dark-mode h4,
+body.dark-mode #leaderboard,
+body.dark-mode #leaderboardList,
+body.dark-mode #leaderboardSave,
+body.dark-mode #scoreDisplay,
+body.dark-mode #winsDisplay,
+body.dark-mode #timerDisplay {
+    color: white;
+}
+
+/* You might also need to update tile borders or keyboard colors for dark mode */
+body.dark-mode .tile[data-state="empty"] {
+    border-color: #3a3a3c;
+}
+
+body.dark-mode .key {
+    background-color: #818384;
+    color: white;
+}
