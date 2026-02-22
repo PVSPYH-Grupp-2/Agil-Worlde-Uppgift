@@ -4,7 +4,6 @@
 const settingsIcon = document.getElementById("settingsIcon");
 
 settingsIcon.addEventListener("click", () => {
-    // Toggle the dark-mode class on the body
     document.body.classList.toggle("dark-mode");
     
     // Save the preference to localStorage
@@ -18,16 +17,21 @@ const CURRENT_SECRET = document.body.dataset.secret;
 let totalPoints = parseInt(localStorage.getItem("totalPoints")) || 0;
 
 
+let timeLeft = 120;
+let timerInterval = null;
+
 function gameOver() {
     document.getElementById("restartBtn").style.display = "block";
     document.getElementById("leaderboard").style.display = "block";
     document.getElementById("leaderboardSave").style.display = "block";
-    
-    // Refresh the scores from the server when the game ends
+     
+    if (timerInterval) clearInterval(timerInterval); // stop timer when game ends
+   
     fetchLeaderboard(); 
     
     saveState(); // Save final state when game is over
 }
+
 function restartGame() {
     clearState(); // Clear saved state on restart
     location.reload();
@@ -121,7 +125,8 @@ function saveState() {
     board,
     keyboard,
     message: document.getElementById("message")?.textContent || "",
-    hintIconUsed: hintIcon?.classList.contains("used") || false
+    hintIconUsed: hintIcon?.classList.contains("used") || false,
+    timeLeft // <-- ADDED: Save current time to prevent refresh-cheating
   };
 
   localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
@@ -176,6 +181,8 @@ function restoreState(state) {
   currentCol = state.currentCol ?? 0;
   gameOverFlag = state.gameOverFlag ?? false;
   hintUsed = state.hintUsed ?? false;
+  //Set the timer to whatever is saved in state.timeLeft. But, if state.timeLeft is completely missing or empty, default to 120
+  timeLeft = state.timeLeft ?? 120; 
 
   // Restore hint icon
   if (hintIcon) {
@@ -493,6 +500,53 @@ function clearAllHintPlaceholders() {
   });
 }
 
+function updateTimerDisplay() {
+    const timerDisplay = document.getElementById("timerDisplay");
+    if (!timerDisplay) return;
+    
+    const minutes = Math.floor(timeLeft / 60);
+    const seconds = timeLeft % 60;
+    
+    // Format timer to always show MM:SS 
+    const paddedMinutes = String(minutes).padStart(2, '0');  
+    const paddedSeconds = String(seconds).padStart(2, '0');
+
+    timerDisplay.textContent = `TIMER: ${paddedMinutes}:${paddedSeconds}`;
+}
+
+function startTimer() {
+    if (timerInterval) clearInterval(timerInterval);
+    updateTimerDisplay(); // Initial display setup
+    
+    timerInterval = setInterval(() => {
+        if (gameOverFlag) {
+            clearInterval(timerInterval);
+            return;
+        }
+        
+        timeLeft--;
+        updateTimerDisplay();
+        
+        // Check if time ran out
+        if (timeLeft <= 0) {
+            clearInterval(timerInterval);
+            gameOverFlag = true;
+            
+            // Show notification when time is up
+            showMessage("Time's up!");
+            
+            // Player loses, reset points
+            totalPoints = 0;
+            localStorage.setItem("totalPoints", totalPoints);
+            const pointCounter = document.querySelector(".point-counter");
+            if (pointCounter) pointCounter.innerText = "Points: " + totalPoints;
+            
+            gameOver();
+        }
+    }, 1000); // Trigger every 1 second
+}
+// -----------------------------------------------
+
 document.addEventListener("DOMContentLoaded", () => {
   const saved = loadState();
   if (saved) restoreState(saved);
@@ -504,4 +558,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Fetch leaderboard on startup
   fetchLeaderboard();
+
+  if (!gameOverFlag) {
+      startTimer(); // start timer when page is ready.
+  } else {
+      updateTimerDisplay(); // If the game was already over, just show the final stopped time
+  }
+  // ---------------------------------------------
 });
