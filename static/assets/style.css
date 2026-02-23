@@ -500,6 +500,40 @@ body {
   transform: scale(0.96);
 }
 
+/* continue-button */
+#continueBtn {
+  display: none;
+
+  width: 100%;
+  max-width: 320px;
+
+  padding: 16px;
+  font-size: 1rem;
+  font-weight: 600;
+
+  background-color: #6aaa64;
+  /* Wordle-grön */
+  color: white;
+
+  border: none;
+  border-radius: 10px;
+
+  cursor: pointer;
+  touch-action: manipulation;
+
+  transition: background-color 0.2s ease, transform 0.1s ease;
+}
+
+/* Hover (desktop) */
+#continueBtn:hover {
+  background-color: #5c9c59;
+}
+
+/* Active (mobile-press) */
+#continueBtn:active {
+  transform: scale(0.96);
+}
+
 /* Leaderboard section */
 #leaderboard {
     margin-top: 50px; 

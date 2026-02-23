@@ -13,15 +13,21 @@ settingsIcon.addEventListener("click", () => {
 
 // Restart button and functionality
 const restartBtn = document.getElementById("restartBtn");
+restartBtn.addEventListener("click", restartGame);
+
+const continueBtn = document.getElementById("continueBtn")
+continueBtn.addEventListener("click", continueGame);
+
 const CURRENT_SECRET = document.body.dataset.secret;
 let totalPoints = parseInt(localStorage.getItem("totalPoints")) || 0;
 
 
 let timeLeft = 120;
 let timerInterval = null; 
-
-function gameOver() {
-    document.getElementById("restartBtn").style.display = "block";
+// Need to add win as a parameter to determine win/loss for buttons
+function gameOver(win) {
+    document.getElementById("restartBtn").style.display = win ? "none" : "block";
+    document.getElementById("continueBtn").style.display = win ? "block" : "none";
     document.getElementById("leaderboard").style.display = "block";
     document.getElementById("leaderboardSave").style.display = "block";
      
@@ -31,13 +37,19 @@ function gameOver() {
     
     saveState(); // Save final state when game is over
 }
-
+// restartGame now sets totalPoints to 0.
 function restartGame() {
+    totalPoints = 0;
+    localStorage.setItem("totalPoints", totalPoints)
     clearState(); // Clear saved state on restart
     location.reload();
 }
-
-restartBtn.addEventListener("click", restartGame);
+function continueGame() {
+    // Keeps totalPoints as they were
+    clearState();
+    location.reload();
+}
+// restartBtn.addEventListener("click", restartGame);
 
 const saveBtn = document.getElementById("saveBtn");
 const nameInput = document.getElementById("playerName");
@@ -334,7 +346,7 @@ function sendGuessToServer(word) {
                         "Points: " + totalPoints;
 
                       
-                    gameOver();
+                    gameOver(true);
                 }
                 else if (currentRow >= rows.length) {
                   totalPoints = 0;
@@ -344,7 +356,7 @@ function sendGuessToServer(word) {
                     "Points: " + totalPoints;
 
                   
-                  gameOver()
+                  gameOver(false)
                 }
             }
         });

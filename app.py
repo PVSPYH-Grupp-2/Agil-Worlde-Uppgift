@@ -8,7 +8,8 @@ import os
 
 app = Flask(__name__)
 app.secret_key = "dev_secret_key"  # Needed for session management
-app.config["PERMANENT_SESSION_LIFETIME"] = timedelta(days=30)  # Session lasts for 30 days
+app.config["PERMANENT_SESSION_LIFETIME"] = timedelta(
+    days=30)  # Session lasts for 30 days
 
 wins = 0
 points = 0
@@ -23,33 +24,36 @@ game_hint_used = False
 def get_score(player_entry):
     return (player_entry.get("points", 0), player_entry.get("wins", 0))
 
+
 def save_to_json(name, win_count, point_count):
     data = []
-    #Load existing data if file exists
+    # Load existing data if file exists
     if os.path.exists(LEADERBOARD_FILE):
         try:
             with open(LEADERBOARD_FILE, "r") as f:
                 data = json.load(f)
         except:
             data = []
-    
+
     # Add the new player and their score to the list
     new_entry = {"name": name, "wins": win_count, "points": point_count}
     data.append(new_entry)
-    
+
     # Sort the list (highest wins first)
-    data.sort(key=get_score, reverse=True) # rewrite this one
-    
+    data.sort(key=get_score, reverse=True)  # rewrite this one
+
     # Keep only the top 10 scores
-    top_ten = data[:10] 
-    
+    top_ten = data[:10]
+
     # Save back to the file
     with open(LEADERBOARD_FILE, "w") as f:
         json.dump(top_ten, f)
 
+
 @app.route("/", methods=["GET", "POST"])
 def home():
-    session.permanent = True  # Make the session permanent so it lasts for the defined lifetime
+    # Make the session permanent so it lasts for the defined lifetime
+    session.permanent = True
     global SECRET_WORD, game_hint_used
 
     if "secret_word" not in session:
@@ -57,12 +61,13 @@ def home():
 
     if "game_hint_used" not in session:
         session["game_hint_used"] = False
-        
+
     SECRET_WORD = session["secret_word"]  # new word every refresh
     game_hint_used = session["game_hint_used"]
 
     print("SECRET_WORD:", SECRET_WORD)   # JUst for testing
     return render_template("index.html", secret=session["secret_word"])
+
 
 @app.route("/leaderboard", methods=["GET"])
 def leaderboard():
@@ -75,6 +80,7 @@ def leaderboard():
                 data = []
     return jsonify({"leaderboard": data})
 
+
 @app.route("/save-score", methods=["POST"])
 def save_score():
     data = request.get_json()
@@ -82,9 +88,10 @@ def save_score():
     name = data.get("name", "Anonymous")
     current_wins = data.get("wins", 0)
     current_points = data.get("points", 0)
-    
+
     save_to_json(name, current_wins, current_points)
     return jsonify({"success": True})
+
 
 @app.route("/check-word", methods=["POST"])
 def check_word():
@@ -99,9 +106,6 @@ def check_word():
 
     data = request.get_json()
     word = data.get("word", "").lower()
-    
-
-
 
     if word not in WORDLIST:
         return jsonify({"valid": False, "reason": "Not in wordlist"})
@@ -111,9 +115,11 @@ def check_word():
 
     if win:
         wins += 1
-        session["secret_word"] = generate_word(WORDLIST)   # nytt ord efter vinst
-        session["game_hint_used"] = False                  # reset hint för nya ordet
-        session.pop("hint_col", None) # reset hint column for new game
+        session["secret_word"] = generate_word(
+            WORDLIST)   # nytt ord efter vinst
+        # reset hint för nya ordet
+        session["game_hint_used"] = False
+        session.pop("hint_col", None)  # reset hint column for new game
         session.pop("hint_letter", None)  # reset hint letter for new game
 
     return jsonify({
@@ -122,6 +128,7 @@ def check_word():
         "win": win,
         "wins": wins
     })
+
 
 @app.route("/get-hint", methods=["POST"])
 def get_hint():
@@ -146,10 +153,11 @@ def get_hint():
     # determine available columns
     available_cols = []
     for i in range(WORD_LENGTH):
-         #For column i,check if any row has "correct" at that column. Meaning → that letter is already correctly guessed.
+        # For column i,check if any row has "correct" at that column. Meaning → that letter is already correctly guessed.
         col_correct = any(row[i] == "correct" for row in guessed_rows)
         if not col_correct:
-            available_cols.append(i) #If column is NOT already solved. Add it to hint options.
+            # If column is NOT already solved. Add it to hint options.
+            available_cols.append(i)
 
     if not available_cols:
         return jsonify({"success": False, "message": "All letters guessed"})
@@ -159,7 +167,7 @@ def get_hint():
 
     session["game_hint_used"] = True
     session["hint_col"] = col
-    session["hint_letter"] = letter 
+    session["hint_letter"] = letter
 
     return jsonify({"success": True, "col": col, "letter": letter})
 
