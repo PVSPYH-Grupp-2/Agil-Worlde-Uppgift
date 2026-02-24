@@ -40,10 +40,10 @@ continueBtn.addEventListener("click", continueGame);
 const CURRENT_SECRET = document.body.dataset.secret;
 let totalPoints = parseInt(localStorage.getItem("totalPoints")) || 0;
 
-
 let storedTime = localStorage.getItem("savedTimeLeft");
 let timeLeft = storedTime !== null ? parseInt(storedTime) : 120;
 let timerInterval = null; 
+
 // Need to add win as a parameter to determine win/loss for buttons
 function gameOver(win) {
     document.getElementById("restartBtn").style.display = win ? "none" : "block";
@@ -66,6 +66,7 @@ function restartGame() {
     clearState(); 
     location.reload();
 }
+
 function continueGame() {
     // 3. Save the remaining time (plus any bonus) before reloading on win
     localStorage.setItem("savedTimeLeft", timeLeft); 
@@ -123,7 +124,6 @@ async function fetchLeaderboard() {
     }
 }
 
-
 const rows = document.querySelectorAll(".boardRow");
 
 let currentRow = 0;
@@ -131,7 +131,6 @@ let currentCol = 0;
 const WORD_LENGTH = 5;
 let gameOverFlag = false; // Flag to stop input after win
 let maxPoints = 30;
-
 
 // LocalStorage (persistent state)
 const STORAGE_KEY = "wordle_state_v1";
@@ -235,8 +234,6 @@ function restoreState(state) {
   }
 }
 
-
-
 //Typing letters into tiles
 function handleInput(key) { 
     if (gameOverFlag) return; // stop input typing after win
@@ -248,6 +245,7 @@ function handleInput(key) {
         submitGuess();
     }
 }
+
 function addLetter(letter) {
     if (currentCol >= WORD_LENGTH) return;
 
@@ -265,6 +263,7 @@ function addLetter(letter) {
 
     saveState(); // Save after each letter input
 }
+
 function removeLetter() {
     if (currentCol === 0) return;
 
@@ -280,6 +279,7 @@ function removeLetter() {
 
     saveState(); // Save after deletion
 }
+
 function submitGuess() {
     if (currentCol < WORD_LENGTH) {
         shakeRow();
@@ -309,12 +309,14 @@ document.querySelectorAll(".key").forEach(key => {
         handleInput(value);
     });
 });
+
 function shakeRow() {
     const row = rows[currentRow];
     row.classList.add("invalid");
 
     setTimeout(() => row.classList.remove("invalid"), 600);
 }
+
 function sendGuessToServer(word) {
     fetch("/check-word", {
         method: "POST",
@@ -360,14 +362,11 @@ function sendGuessToServer(word) {
                     
                     localStorage.setItem("totalPoints", totalPoints);
 
-
                     document.querySelector(".win-counter").innerText = 
                         "Wins: " + data.wins;
                       
-
                     document.querySelector(".point-counter").innerText = 
                         "Points: " + totalPoints;
-
                       
                     gameOver(true);
                 }
@@ -378,12 +377,12 @@ function sendGuessToServer(word) {
                   document.querySelector(".point-counter").innerText = 
                     "Points: " + totalPoints;
 
-                  
                   gameOver(false)
                 }
             }
         });
 }
+
 function applyResult(result) {
     const stateMap = ["absent", "present", "correct"]; 
     const delay = 200; // The time to wait before starting the next tile's flip
@@ -530,6 +529,7 @@ function showMessage(msg) {
   messageEl.textContent = msg;
   setTimeout(() => { messageEl.textContent = ""; }, 2000); 
 }
+
 function clearAllHintPlaceholders() {
   rows.forEach(row => {
     Array.from(row.children).forEach(tile => {
