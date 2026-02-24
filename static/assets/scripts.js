@@ -1,4 +1,4 @@
-// script.js
+// scripts.js
 
 // Settings / Dark Mode Toggle
 const settingsIcon = document.getElementById("settingsIcon");
@@ -22,7 +22,8 @@ const CURRENT_SECRET = document.body.dataset.secret;
 let totalPoints = parseInt(localStorage.getItem("totalPoints")) || 0;
 
 
-let timeLeft = 120;
+let storedTime = localStorage.getItem("savedTimeLeft");
+let timeLeft = storedTime !== null ? parseInt(storedTime) : 120;
 let timerInterval = null; 
 // Need to add win as a parameter to determine win/loss for buttons
 function gameOver(win) {
@@ -40,12 +41,15 @@ function gameOver(win) {
 // restartGame now sets totalPoints to 0.
 function restartGame() {
     totalPoints = 0;
-    localStorage.setItem("totalPoints", totalPoints)
-    clearState(); // Clear saved state on restart
+    localStorage.setItem("totalPoints", totalPoints);
+    // 2. Reset timer back to 120 on loss
+    localStorage.setItem("savedTimeLeft", 120); 
+    clearState(); 
     location.reload();
 }
 function continueGame() {
-    // Keeps totalPoints as they were
+    // 3. Save the remaining time (plus any bonus) before reloading on win
+    localStorage.setItem("savedTimeLeft", timeLeft); 
     clearState();
     location.reload();
 }

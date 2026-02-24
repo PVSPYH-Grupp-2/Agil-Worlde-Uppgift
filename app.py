@@ -24,7 +24,7 @@ game_hint_used = False
 def get_score(player_entry):
     return (player_entry.get("points", 0), player_entry.get("wins", 0))
 
-
+ 
 def save_to_json(name, win_count, point_count):
     data = []
     # Load existing data if file exists
