@@ -1,8 +1,7 @@
 import random # Just for now
 import os
 import json
-from typing import List
-from flask import Flask, redirect, url_for
+from flask import redirect, url_for
 import requests
 
 
@@ -31,8 +30,6 @@ def generate_word(words: list[str]) -> str:
     
     return random.choice(words).lower()
 
-# This one we will scrap.
-
 
 # Checks if the guessed word is correct
 def win_validation(guessed_word, generated_word) -> bool:
@@ -51,7 +48,6 @@ def try_again(yes) -> bool:
         return redirect(url_for("index.html"))
     else:
         return redirect(url_for("index.html"))
-
 
 
 def letter_check(generated_word, guessed_word):
