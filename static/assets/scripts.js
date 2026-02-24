@@ -1,5 +1,24 @@
 // scripts.js
 
+const quitBtn = document.getElementById("quitBtn");
+
+quitBtn.addEventListener("click", () => {
+    if (gameOverFlag) return; // Do nothing if the game is already over
+    
+    gameOverFlag = true;
+    
+    // Reset points since the player quit
+    totalPoints = 0;
+    localStorage.setItem("totalPoints", totalPoints);
+    
+    const pointCounter = document.querySelector(".point-counter");
+    if (pointCounter) pointCounter.innerText = "Points: " + totalPoints; // Update point counter
+    
+    showMessage("You quit!");
+    
+    gameOver(false); // False indicates loss
+});
+
 // Settings / Dark Mode Toggle
 const settingsIcon = document.getElementById("settingsIcon");
 
