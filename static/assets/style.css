@@ -727,8 +727,9 @@ body {
 .errorMessage {
   position: absolute;
   left: 50%;
-  transform: translateX(-50%);
+  margin-top: 10px;
   color: #a90111;
+  font-weight: 700;
 }
 
 /* hint on right */
