@@ -1,5 +1,5 @@
 // scripts.js
-
+const PRAISE_BY_ATTEMPTS = {1: "Genius",2: "Magnificent",3: "Impressive",4: "Splendid",5: "Great",6: "Phew"};
 const quitBtn = document.getElementById("quitBtn");
 
 quitBtn.addEventListener("click", () => {
@@ -347,6 +347,10 @@ function sendGuessToServer(word) {
                     
 
                     const winRow = currentRow -1;
+                    const attempts = winRow + 1;
+                    // Praise mapping
+                    const praise = PRAISE_BY_ATTEMPTS[attempts] || "Nice";
+                    showResultBanner(praise);
                     const earnedPoints = maxPoints -(winRow * 5);
 
                     let timeBonus = 30 - (winRow * 5);
@@ -607,3 +611,17 @@ document.addEventListener("DOMContentLoaded", () => {
       updateTimerDisplay(); // If the game was already over, just show the final stopped time
   }
 });
+function showResultBanner(text, duration = 1800) {
+  const banner = document.getElementById("resultBanner");
+  if (!banner) return;
+
+  banner.textContent = text;       // ex: "GENIUS"
+  banner.classList.add("show");
+
+  clearTimeout(banner._timer);
+  banner._timer = setTimeout(() => {
+    banner.classList.remove("show");
+    // optional clear text after fade:
+    setTimeout(() => (banner.textContent = ""), 200);
+  }, duration);
+}
