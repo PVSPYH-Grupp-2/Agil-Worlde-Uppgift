@@ -18,8 +18,6 @@
 <body data-secret="{{ secret }}">
     <div class="gameContainer">
    <div class="topBar">
-            <div id="message" class="errorMessage"></div>
-            
             <div class="leftControls">
                 <div class="topRowLeft">
                     <div id="scoreDisplay">SCORE: 0</div>
@@ -33,7 +31,10 @@
                 
                 <div id="timerDisplay">TIMER: 00:00</div>
             </div>
-
+            <div class="msgStack">
+                <div id="message" class="errorMessage"></div>
+                <div id="resultBanner" class="resultBanner" aria-live="polite"></div>
+            </div>
             <button id="quitBtn">QUIT</button>
         </div>
         <!-- BOARD -->
