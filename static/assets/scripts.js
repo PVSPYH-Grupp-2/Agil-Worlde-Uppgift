@@ -381,8 +381,8 @@ function sendGuessToServer(word) {
 
                   document.querySelector(".point-counter").innerText = 
                     "Points: " + totalPoints;
-
-                  
+                  // Lose: reveal the word
+                    revealSecretWord();
                   gameOver(false)
                 }
             }
@@ -624,4 +624,9 @@ function showResultBanner(text, duration = 1800) {
     // optional clear text after fade:
     setTimeout(() => (banner.textContent = ""), 200);
   }, duration);
+}
+function revealSecretWord() {
+  const word = (CURRENT_SECRET || "").toUpperCase();
+  if (!word) return;
+  showResultBanner(`${word}`, 2600);
 }
