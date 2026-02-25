@@ -628,5 +628,5 @@ function showResultBanner(text, duration = 1800) {
 function revealSecretWord() {
   const word = (CURRENT_SECRET || "").toUpperCase();
   if (!word) return;
-  showResultBanner(`${word}`, 2600);
+  showMessage(`WORD is '${word}'`);
 }
