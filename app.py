@@ -1,5 +1,5 @@
 # app.py
-from flask import Flask, redirect, render_template, request, jsonify, session
+from flask import Flask, render_template, request, jsonify, session
 from backend.wordle_logic import win_validation, load_wordlist, generate_word, letter_check
 from datetime import timedelta
 import random
