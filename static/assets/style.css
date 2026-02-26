@@ -1,0 +1,791 @@
+/* http://meyerweb.com/eric/tools/css/reset/ 
+   v2.0 | 20110126
+   License: none (public domain)
+*/
+@import url('https://fonts.googleapis.com/css2?family=Bungee+Spice&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Monsieur+La+Doulaise&display=swap');
+
+html,
+body,
+div,
+span,
+applet,
+object,
+iframe,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p,
+blockquote,
+pre,
+a,
+abbr,
+acronym,
+address,
+big,
+cite,
+code,
+del,
+dfn,
+em,
+img,
+ins,
+kbd,
+q,
+s,
+samp,
+small,
+strike,
+strong,
+sub,
+sup,
+tt,
+var,
+b,
+u,
+i,
+center,
+dl,
+dt,
+dd,
+ol,
+ul,
+li,
+fieldset,
+form,
+label,
+legend,
+table,
+caption,
+tbody,
+tfoot,
+thead,
+tr,
+th,
+td,
+article,
+aside,
+canvas,
+details,
+embed,
+figure,
+figcaption,
+footer,
+header,
+hgroup,
+menu,
+nav,
+output,
+ruby,
+section,
+summary,
+time,
+mark,
+audio,
+video {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  font-size: 100%;
+  font: inherit;
+  vertical-align: baseline;
+}
+
+/* HTML5 display-role reset for older browsers */
+article,
+aside,
+details,
+figcaption,
+figure,
+footer,
+header,
+hgroup,
+menu,
+nav,
+section {
+  display: block;
+}
+
+body {
+  line-height: 1;
+}
+
+ol,
+ul {
+  list-style: none;
+}
+
+blockquote,
+q {
+  quotes: none;
+}
+
+blockquote:before,
+blockquote:after,
+q:before,
+q:after {
+  content: '';
+  content: none;
+}
+
+table {
+  border-collapse: collapse;
+  border-spacing: 0;
+}
+
+/*Wordle CSS*/
+:root {
+  --keyboard-height: 200px;
+  --game-max-width: 500px;
+  --horizontal-spacing-0-5: 4px;
+  --horizontal-spacing-1: 8px;
+  --vertical-spacing-1: 8px;
+
+
+  /* Tile + text colors */
+  --tile-text-color: #fff;
+  --key-text-color: #000;
+  --color-present: #c9b458;
+  --color-correct: #6aaa64;
+  --color-absent: #787c7e;
+
+  /* Key colors */
+  --key-bg: #d3d6da;
+  --key-bg-present: var(--color-present);
+  --key-bg-correct: var(--color-correct);
+  --key-bg-absent: var(--color-absent);
+  --key-evaluated-text-color: #fff;
+  --key-evaluated-text-color-absent: #fff;
+}
+
+html {
+  height: 100%;
+
+}
+
+body {
+  height: 100%;
+  background-color: #fff;
+  margin: 0;
+  padding: 0;
+  font-family: 'Inter', Arial, sans-serif;
+  font-size: 16px;
+}
+
+/* this <div> have both board and keyboard Containers*/
+.gameContainer {
+  width: 100%;
+  max-width: var(--game-max-width);
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+}
+
+/* This is for whole board*/
+.boardContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-grow: 1;
+  overflow: hidden;
+}
+
+/* This is our main <div> having rows */
+.board {
+  display: grid;
+  grid-template-rows: repeat(6, 1fr);
+  grid-gap: 5px;
+  padding: 10px;
+  box-sizing: border-box;
+  min-width: min(250px, 100vw);
+
+}
+
+.boardRow {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(60px, 1fr));
+  grid-gap: 5px;
+}
+
+/* Row value is invalid...then row will shake */
+.boardRow.invalid {
+  animation-name: Shake;
+  animation-duration: 600ms;
+}
+
+.win {
+  animation-name: Bounce;
+  animation-duration: 1000ms;
+}
+
+@keyframes Bounce {
+
+  0%,
+  20% {
+    transform: translateY(0);
+  }
+
+  40% {
+    transform: translateY(-30px);
+  }
+
+  50% {
+    transform: translateY(5px);
+  }
+
+  60% {
+    transform: translateY(-15px);
+  }
+
+  80% {
+    transform: translateY(2px);
+  }
+
+  100% {
+    transform: translateY(0);
+  }
+}
+
+@keyframes Shake {
+
+  10%,
+  90% {
+    transform: translateX(-1px);
+  }
+
+  20%,
+  80% {
+    transform: translateX(2px);
+  }
+
+  30%,
+  50%,
+  70% {
+    transform: translateX(-4px);
+  }
+
+  40%,
+  60% {
+    transform: translateX(4px);
+  }
+}
+
+/*Example:  <div class="tile" data-state="correct" data-animation="flip-out">A</div>    */
+.tile {
+  font-family: 'Inter', Arial, sans-serif;
+  width: 100%;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 2rem;
+  line-height: 1;
+  font-weight: bold;
+  vertical-align: middle;
+  box-sizing: border-box;
+  color: var(--tile-text-color);
+  text-transform: uppercase;
+  user-select: none;
+}
+
+.tile::before {
+  content: '';
+  display: inline-block;
+  padding-bottom: 100%;
+}
+
+/* Allow tiles to be smaller on small screens */
+@media (max-height: 600px) {
+  .tile {
+    font-size: 1em;
+  }
+}
+
+/* Empty tile: No background,Gray border,Default unused tile*/
+.tile[data-state='empty'] {
+  border: 2px solid #d3d6da;
+}
+
+/* Typing / pending (tbd): Light background,Slight border,Shows letters before submission */
+.tile[data-state='tbd'] {
+  background-color: #fff;
+  border: 2px solid #878a8c;
+  color: #000;
+}
+
+/* Correct letter: Green tile,White text,Letter is correct and in the right spot ✅ */
+.tile[data-state='correct'] {
+  background-color: var(--color-correct);
+  color: var(--key-evaluated-text-color);
+}
+
+/* Present letter: Yellow tile,White text,Letter exists, wrong position ⚠️*/
+.tile[data-state='present'] {
+  background-color: var(--color-present);
+  color: var(--key-evaluated-text-color);
+}
+
+/* Absent letter: Dark gray tile,White text,Letter not in the word ❌ */
+.tile[data-state='absent'] {
+  background-color: var(--color-absent);
+  color: var(--key-evaluated-text-color-absent);
+}
+
+/* Pop animation (letter entry):Triggers when a letter is typed,Makes tile “pop” into place */
+.tile[data-animation='pop'] {
+  animation-name: PopIn;
+  animation-duration: 100ms;
+}
+
+@keyframes PopIn {
+  from {
+    transform: scale(0.8);
+    opacity: 0;
+  }
+
+  40% {
+    transform: scale(1.1);
+    opacity: 1;
+  }
+}
+
+/* Flip animations (reveal result),Flip in (first half): Tile rotates forward,Hides front face,Happens before color change */
+.tile[data-animation='flip-in'] {
+  animation-name: FlipIn;
+  animation-duration: 250ms;
+  animation-timing-function: ease-in;
+}
+
+@keyframes FlipIn {
+  0% {
+    transform: rotateX(0);
+  }
+
+  100% {
+    transform: rotateX(-90deg);
+  }
+}
+
+/* Flip out (second half):Tile flips back into view,Shows updated color (green/yellow/gray) */
+.tile[data-animation='flip-out'] {
+  animation-name: FlipOut;
+  animation-duration: 250ms;
+  animation-timing-function: ease-in;
+}
+
+@keyframes FlipOut {
+  0% {
+    transform: rotateX(-90deg);
+  }
+
+  100% {
+    transform: rotateX(0);
+  }
+}
+
+.keyboard {
+  height: var(--keyboard-height);
+  margin: 0 var(--horizontal-spacing-1);
+  user-select: none;
+}
+
+.keyboardRow {
+  display: flex;
+  width: 100%;
+  margin: 0 auto var(--vertical-spacing-1);
+  /* ios-html-disable-double-tap-to-zoom */
+  touch-action: manipulation;
+}
+
+/* keyboard button : <button class="key" data-state="correct">A</button> */
+.key {
+  font-family: 'Inter', Arial, sans-serif;
+  font-size: 1.25em;
+  font-weight: bold;
+  border: 0;
+  padding: 0;
+  margin: 0 calc(var(--horizontal-spacing-0-5) * 1.5) 0 0;
+  height: 58px;
+  border-radius: 4px;
+  cursor: pointer;
+  user-select: none;
+  background-color: var(--key-bg);
+  color: var(--key-text-color);
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-transform: uppercase;
+}
+
+/* Last key spacing fix: Removes right margin from the last key in a row */
+.key:last-of-type {
+  margin: 0;
+}
+
+/* Correct letter (green): Letter is correct & placed */
+.key[data-state='correct'] {
+  background-color: var(--key-bg-correct);
+  color: var(--key-evaluated-text-color);
+}
+
+/* Present letter (yellow): Letter exists, wrong spot*/
+.key[data-state='present'] {
+  background-color: var(--key-bg-present);
+  color: var(--key-evaluated-text-color);
+}
+
+/* Absent letter (gray): Letter not in the word */
+.key[data-state='absent'] {
+  background-color: var(--key-bg-absent);
+  color: var(--key-evaluated-text-color-absent);
+}
+
+/* Fade transition:Smooth color changes,Applied when updating key state */
+.key.fade {
+  transition: background-color 0.1s ease, color 0.1s ease;
+}
+
+/* Normal key width */
+.one {
+  flex: 1;
+}
+
+/* Wider key:Used for Enter / Backspace */
+.oneAndAHalf {
+  flex: 1.5;
+  font-size: 12px;
+}
+
+/* NEW BUTTONS STYLING, Just an idea */
+.buttons {
+  margin-top: 24px;
+  display: flex;
+  justify-content: center;
+  padding: 0 16px;
+}
+
+/* restart-button */
+#restartBtn {
+  display: none;
+
+  width: 100%;
+  max-width: 320px;
+
+  padding: 16px;
+  font-size: 1rem;
+  font-weight: 600;
+
+  background-color: #6aaa64;
+  /* Wordle-grön */
+  color: white;
+
+  border: none;
+  border-radius: 10px;
+
+  cursor: pointer;
+  touch-action: manipulation;
+
+  transition: background-color 0.2s ease, transform 0.1s ease;
+}
+
+/* Hover (desktop) */
+#restartBtn:hover {
+  background-color: #5c9c59;
+}
+
+/* Active (mobile-press) */
+#restartBtn:active {
+  transform: scale(0.96);
+}
+
+/* continue-button */
+#continueBtn {
+  display: none;
+
+  width: 100%;
+  max-width: 320px;
+
+  padding: 16px;
+  font-size: 1rem;
+  font-weight: 600;
+
+  background-color: #6aaa64;
+  /* Wordle-grön */
+  color: white;
+
+  border: none;
+  border-radius: 10px;
+
+  cursor: pointer;
+  touch-action: manipulation;
+
+  transition: background-color 0.2s ease, transform 0.1s ease;
+}
+
+/* Hover (desktop) */
+#continueBtn:hover {
+  background-color: #5c9c59;
+}
+
+/* Active (mobile-press) */
+#continueBtn:active {
+  transform: scale(0.96);
+}
+
+/* Leaderboard section */
+#leaderboard {
+    margin-top: 50px; 
+    padding: 20px;
+    background-color: #ffffff;
+    border: 1px solid #d3d6da;
+    border-radius: 8px;
+    width: 100%;
+    max-width: 350px;
+    margin-left: auto;
+    margin-right: auto;
+    text-align: center;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08); 
+}
+
+#leaderboard h4 {
+    color: #1a1a1b;
+    margin-bottom: 20px;
+    letter-spacing: 1px;
+    font-size: 1.2rem;
+    text-transform: uppercase;
+    border-bottom: 1px solid #f6f7f8;
+    padding-bottom: 10px;
+}
+
+#leaderboardList {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+#leaderboardList li {
+    display: flex;
+    justify-content: space-between;
+    padding: 12px 15px;
+    margin-bottom: 8px;
+    background-color: #f6f7f8;
+    color: #1a1a1b;
+    border-radius: 4px;
+    font-weight: 600;
+    font-size: 0.95rem;
+    border: 1px solid #e3e3e3;
+}
+
+/* --- Top 3 Highlights --- */
+#leaderboardList li:nth-child(1) {
+    border-left: 5px solid #d4af37; /* Gold */
+    background-color: #fffdf2;
+}
+
+#leaderboardList li:nth-child(2) {
+    border-left: 5px solid #9ea3a9; /* Silver */
+}
+
+#leaderboardList li:nth-child(3) {
+    border-left: 5px solid #cd7f32; /* Bronze */
+}
+
+/* --- Save Score Section --- */
+#leaderboardSave {
+    margin-top: 30px; 
+    margin-bottom: 30px;
+    padding-bottom: 20px;
+    border-bottom: 2px solid #f6f7f8;
+}
+
+#playerName {
+    padding: 10px;
+    border: 2px solid #d3d6da;
+    border-radius: 4px;
+    background-color: #ffffff;
+    color: #1a1a1b;
+    width: 65%;
+    outline: none;
+    font-size: 1rem;
+}
+
+#playerName:focus {
+    border-color: #6aaa64;
+}
+
+#saveBtn {
+    padding: 10px 20px;
+    background-color: #6aaa64;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 0.9rem;
+    margin-left: 5px;
+}
+
+#saveBtn:hover {
+    background-color: #538d4e;
+}
+
+.win-counter {
+    color: #787c7e;
+    font-size: 0.85rem;
+    margin-top: 10px;
+    font-weight: bold;
+}
+
+.point-counter {
+    color: #787c7e;
+    font-size: 0.85rem;
+    margin-top: 10px;
+    font-weight: bold;
+}
+
+/* top bar section */ 
+.topBar {
+    display: flex !important;
+    justify-content: space-between; /* Pushes left block and right button apart */
+    align-items: flex-start;
+    width: 100%;
+    margin-bottom: 20px;
+    position: relative; /* Keeps the error message centered relative to topBar */
+}
+
+/* Container for left items */
+.leftControls {
+    display: flex;
+    flex-direction: column;
+    gap: 6px; /* Space between the top row and the timer */
+}
+
+/* Score, Wins, and Icons row */
+.topRowLeft {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-weight: 700;
+    font-size: 1.1rem;
+    color: #000;
+}
+
+/* Timer: Increased size by ~25% */
+#timerDisplay {
+    font-weight: 700;
+    font-size: 1.2rem; 
+    color: #000;
+}
+
+/* Override original hint container to fit the new flex row */
+.hintContainer {
+    margin-left: 0 !important;
+}
+
+#hintIcon, #settingsIcon {
+    margin: 0 !important;
+    font-size: 1.8rem;
+    cursor: pointer;
+    color: #000;
+    transition: transform 0.2s ease;
+}
+
+/* Make hint bulb stay yellow like your original design */
+#hintIcon {
+    color: #fbbc04; 
+}
+
+#hintIcon:hover, #settingsIcon:hover {
+    transform: scale(1.1);
+}
+
+/* Quit Button stays on the right */
+#quitBtn {
+    background-color: #d3d6da;
+    border: none;
+    border-radius: 6px;
+    padding: 8px 16px;
+    font-weight: bold;
+    font-size: 1rem;
+    cursor: pointer;
+    font-family: 'Inter', Arial, sans-serif;
+    transition: background-color 0.1s ease;
+    margin-top: 2px; /* Aligns slightly better with the top row text */
+}
+
+#quitBtn:hover {
+    background-color: #c0c3c7;
+}
+
+#quitBtn:active {
+    transform: scale(0.96);
+}
+
+/* error message on board */
+.errorMessage {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  color: #a90111;
+}
+
+/* hint on right */
+.hintContainer {
+  margin-left: auto;
+}
+.tile.hint-placeholder {
+  color: rgba(0,0,0,0.3);
+  background-color: rgba(24, 181, 10, 0.18); /* light green*/
+  font-style: italic;
+  transition: opacity 0.5s ease;
+  opacity: 0;
+  animation: fadeIn 0.5s forwards;
+}
+
+@keyframes fadeIn {
+  to { opacity: 1; }
+}
+
+#hintIcon {
+  font-size: 2rem;
+  cursor: pointer;
+  margin: 10px;
+  color: #fbbc04;
+  transition: opacity 0.3s ease;
+}
+
+#hintIcon.used {
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+/* Dark Mode state */
+body.dark-mode {
+    background-color: #121213; /* Classic Wordle dark gray/black */
+    color: white;
+
+}
+
+
+body.dark-mode .gameContainer, 
+body.dark-mode h4,
+body.dark-mode #leaderboard,
+body.dark-mode #leaderboardList,
+body.dark-mode #leaderboardSave,
+body.dark-mode #scoreDisplay,
+body.dark-mode #winsDisplay,
+body.dark-mode #timerDisplay {
+    color: white;
+}
+
+/* You might also need to update tile borders or keyboard colors for dark mode */
+body.dark-mode .tile[data-state="empty"] {
+    border-color: #3a3a3c;
+}
+
+body.dark-mode .key {
+    background-color: #818384;
+    color: white;
+}

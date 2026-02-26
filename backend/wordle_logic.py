@@ -1,60 +1,84 @@
 import random # Just for now
+import os
+import json
 from typing import List
+from flask import Flask, redirect, url_for
+import requests
+
 
 LETTER_NOT_IN_WORD = 0 # Bokstaven finns inte alls i ordet // Letter is not inte the word at all
 LETTER_CORRECT_WRONG_POS = 1 # Bokstaven finns i ordet, men i fel position // Letter is in the word, but in the wrong position
 LETTER_PERFECT = 2 # Letter is in the word and in the exact position
+BASE_DIR = os.path.abspath(
+    os.path.join(os.path.dirname(__file__), "..")
+)
 wins = 0
 # Also i probably will not use global variables as the ones above in the future. It's just there as an illustration.
 
-def generate_word(words) -> str:
-    """
-    This func just returns a random word from a list.
-    Can be replaced by Pontus and his random-word-generator :D
-    """
+def fetch_word_from_api() -> str:
+    response = requests.get("https://gist.githubusercontent.com/mrhead/f0ced2726394588e8d9863e0568b6473/raw/wordle.json")
+
+    data = response.json()
+
+    with open(os.path.join(BASE_DIR, "static", "assets", "words.json"), "w", encoding="utf-8") as f:
+        json.dump(data, f)
+    
+
+def generate_word(words: list[str]) -> str:
+
+    if not words:
+        raise ValueError("No wordlist found")
+    
     return random.choice(words).lower()
+
 # This one we will scrap.
 
 
 # Checks if the guessed word is correct
 def win_validation(guessed_word, generated_word) -> bool:
-    """
-    Returns True if the guessed word matches the generated word.
-    If True, we could save that data to keep track of the score,
-    or simply just tell the user they won! Yay!
-    """
-    return guessed_word.lower() == generated_word.lower()
-    # We return a bool because the rest of the logic should be outside of this function. Best practice i've heard :S
-    
 
-def letter_check(generated_word, guessed_letter) -> List[int]: 
-# Checks each letter
-    result = []
+    if guessed_word == generated_word:
+        print("Grattis, du vann!")
+        return True
+    else:
+        print("Förlust, prova igen!")
+        return False
+        
+
+def try_again(yes) -> bool:
+
+    if yes:
+        return redirect(url_for("index.html"))
+    else:
+        return redirect(url_for("index.html"))
+
+
+
+def letter_check(generated_word, guessed_word):
     """
     Compares each letter in the guessed word with the generated word.
 
-    Could return a list:
+    Returns a list:
     2 = correct letter and correct position
     1 = correct letter but wrong position
     0 = letter is not in word
     """
+    result = []
 
-    for l in range(len(generated_word)): # l for letter
-        if guessed_letter[l] == generated_word[l]:
+    for l in range(len(generated_word)):  # l for letter
+        if guessed_word[l] == generated_word[l]:
             result.append(LETTER_PERFECT)
-            # We found the perfect match, append to the list
-        elif guessed_letter[l] in generated_word:
+        elif guessed_word[l] in generated_word:
             result.append(LETTER_CORRECT_WRONG_POS)
-            # It's there, but not perfect, append to the list
         else:
             result.append(LETTER_NOT_IN_WORD)
-            # This one sucks/loses, still append to the list :D
 
+    print(result)
     return result
 
 
 def validate_word_length(guessed_word):
-    if not len(guessed_word) > 5:
+    if len(guessed_word) == 5:
         return True
     else:
         return False
@@ -70,3 +94,14 @@ as simple as possible for now. So that we could try to implement it, and get it 
 Thank you. It's been your boy Jimpanpimpan.
 Checking out...
 """
+
+def load_wordlist():
+    path = os.path.join(BASE_DIR, "static", "assets", "words.json")
+
+    if not os.path.exists(path):
+        fetch_word_from_api()
+        
+    with open(path, encoding="utf-8") as f:
+        words = json.load(f)
+
+    return words
